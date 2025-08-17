@@ -1,0 +1,49 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.tab-btn.active {
+    border-bottom-color: #3b82f6;
+    color: #3b82f6;
+    font-weight: 600;
+}
+/* Estilos para o rodapé */
+footer {
+    width: 100%;
+    padding: 20px 0;
+    background-color: #f8f8f8; /* Um cinza bem claro */
+    color: #6b7280; /* Cor do texto mais suave */
+    text-align: center;
+    font-size: 0.875rem; /* Equivalente a text-sm do Tailwind */
+    border-top: 1px solid #e5e7eb; /* Borda superior sutil */
+    margin-top: 40px; /* Espaçamento superior para separar do conteúdo */
+}
+
+/* Para garantir que o rodapé fique na parte inferior da página */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#appContainer, #viewLogin {
+    flex: 1;
+}

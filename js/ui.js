@@ -172,9 +172,12 @@ export function renderPreview() {
     dom.finalActions.classList.remove('hidden');
 }
 
+// NOVO BLOCO PARA SUBSTITUIR O ANTIGO
 export async function saveRequisition() {
     const currentState = state.getCurrentState();
     const loggedInUser = state.getLoggedInUser();
+
+    // 1. Prepara os dados da requisição
     const requisicao = {
         pregaoId: currentState.pregaoId,
         fornecedorData: currentState.fornecedorData,
@@ -203,16 +206,48 @@ export async function saveRequisition() {
         valorTotal: parseFloat(dom.totalValueEl.textContent.replace('R$ ', '').replace('.', ',')),
         createdBy: loggedInUser.username
     };
-    const { error } = await api.saveNewRequisition(requisicao);
-    if (error) {
-        alert('Ocorreu um erro ao salvar a requisição. Erro: ' + error.message);
-    } else {
-        state.incrementProximoNumeroRequisicao();
+
+    // 2. ATUALIZAÇÃO OTIMISTA: Modifica o estado local IMEDIATAMENTE
+    try {
+        const db = state.getDB();
+        for (const itemId in requisicao.selectedItems) {
+            const quantidadeRequisitada = requisicao.selectedItems[itemId];
+            const itemNoBanco = db[requisicao.pregaoId]
+                ?.fornecedores.find(f => f.id === requisicao.fornecedorData.id)
+                ?.itens.find(i => i.id === itemId);
+
+            if (itemNoBanco) {
+                itemNoBanco.quantidadeMax -= quantidadeRequisitada;
+            }
+        }
+        state.setDatabase(db); // Aplica as alterações ao estado
+        state.incrementProximoNumeroRequisicao(); // Incrementa o número da requisição
+
+        // Atualiza a UI para mostrar sucesso instantaneamente
         dom.saveSuccess.classList.remove('hidden');
         dom.finalActions.classList.add('hidden');
         dom.startNewAction.classList.remove('hidden');
+
+    } catch (e) {
+        console.error("Erro ao atualizar o estado local:", e);
+        // Se a atualização local falhar, não prosseguimos.
+        return { data: null, error: e };
     }
+
+    // 3. Envia a requisição para o banco de dados em segundo plano
+    const { data, error } = await api.saveNewRequisition(requisicao);
+
+    if (error) {
+        // Se a API falhar, precisamos avisar o usuário e talvez reverter o estado.
+        // Por enquanto, um alerta é suficiente.
+        alert('ATENÇÃO: A requisição foi exibida como salva, mas ocorreu um erro ao comunicar com o servidor. Por favor, recarregue a página e verifique os dados. Erro: ' + error.message);
+        // Aqui, uma lógica de reversão mais complexa poderia ser implementada.
+    }
+    
+    // Retorna o resultado da operação da API
+    return { data, error };
 }
+
 
 export async function renderRequisicoesEmitidas() {
     const loggedInUser = state.getLoggedInUser();

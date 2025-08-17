@@ -1,3 +1,5 @@
+// js/main.js - VERSÃO CORRIGIDA PARA EVITAR DUPLICIDADE
+
 import * as dom from './dom.js';
 import * as state from './state.js';
 import * as api from './api.js';
@@ -175,6 +177,10 @@ function setupEventListeners() {
     dom.loginForm.addEventListener('submit', auth.handleLogin);
     dom.logoutButton.addEventListener('click', auth.handleLogout);
     dom.homeButton.addEventListener('click', ui.startNewRequisition);
+    dom.btnNewRequisition.addEventListener('click', () => {
+        ui.startNewRequisition();
+        ui.navigateToStep(1); 
+    });
     dom.tabRequisicao.addEventListener('click', () => ui.switchView('requisicao'));
     dom.tabGerenciar.addEventListener('click', () => ui.switchView('gerenciar'));
     dom.tabEmitidas.addEventListener('click', () => ui.switchView('emitidas'));
@@ -184,7 +190,10 @@ function setupEventListeners() {
     dom.btnStep2.addEventListener('click', handleStep2);
     dom.btnStep3.addEventListener('click', handleStep3);
     dom.btnDownloadPDF.addEventListener('click', () => ui.handleDownloadHistoricPdf(state.getCurrentState()));
-    dom.btnSave.addEventListener('click', ui.saveRequisition);
+    
+    // A LINHA PROBLEMÁTICA FOI REMOVIDA DAQUI:
+    // dom.btnSave.addEventListener('click', ui.saveRequisition); 
+
     dom.btnNewRequisition.addEventListener('click', ui.startNewRequisition);
     dom.pregaoInput.addEventListener('input', () => dom.errorStep1.classList.add('hidden'));
     document.getElementById('backToStep1').addEventListener('click', () => ui.navigateToStep(1));
@@ -230,23 +239,6 @@ function setupEventListeners() {
         }
         state.updateCurrentState({ selectedItems: currentState.selectedItems });
         ui.updateTotal();
-    });
-    dom.listRequisicoesEmitidas.addEventListener('click', async (e) => {
-        const target = e.target;
-        if (target.classList.contains('download-historic-pdf')) {
-            const requisitionId = target.dataset.requisitionId;
-            const requisicoes = await api.getSavedRequisitions();
-            const reqData = requisicoes.find(r => r.id == requisitionId);
-            if (reqData) { ui.handleDownloadHistoricPdf(reqData.dados_completos); }
-            else { alert('Não foi possível encontrar os dados da requisição.'); }
-        } else if (target.classList.contains('delete-requisition')) {
-            const requisitionId = target.dataset.requisitionId;
-            if (confirm('Tem certeza que deseja excluir esta requisição?')) {
-                const sucesso = await api.deleteRequisition(requisitionId);
-                if (sucesso) { alert('Requisição excluída com sucesso!'); ui.renderRequisicoesEmitidas(); }
-                else { alert('Falha ao excluir a requisição. Você pode não ter permissão.'); }
-            }
-        }
     });
     dom.adminPregoesContainer.addEventListener('submit', handleAdminFormSubmit);
     dom.adminPregoesContainer.addEventListener('click', handleAdminClick);
@@ -295,5 +287,65 @@ async function initializeApp() {
         dom.appContainer.classList.add('hidden');
     }
 }
+
+// ESTE É O LISTENER CORRETO E ÚNICO QUE DEVE EXISTIR PARA O BOTÃO SALVAR
+// NOVO BLOCO PARA SUBSTITUIR O ANTIGO
+dom.btnSave.addEventListener('click', async () => {
+    dom.btnSave.disabled = true;
+    dom.btnSave.textContent = 'A salvar...';
+
+    // A função saveRequisition agora cuida da atualização da UI e do estado local.
+    const { error } = await ui.saveRequisition();
+
+    // A UI já foi atualizada de forma otimista.
+    // Não precisamos mais recarregar todos os dados com api.loadInitialData().
+
+    if (error) {
+        // O erro já é tratado dentro de saveRequisition, mas podemos reativar o botão aqui.
+        dom.btnSave.disabled = false;
+        dom.btnSave.textContent = 'Salvar e Concluir';
+    }
+    // Se for sucesso, o botão já está escondido, então não fazemos nada.
+});
+
+// ESTE É O LISTENER CORRETO PARA A LISTA DE REQUISIÇÕES
+// NOVO BLOCO PARA SUBSTITUIR O ANTIGO
+dom.listRequisicoesEmitidas.addEventListener('click', async (e) => {
+    const target = e.target;
+    if (target.classList.contains('download-historic-pdf')) {
+        const requisitionId = target.dataset.requisitionId;
+        const requisicoes = await api.getSavedRequisitions();
+        const reqData = requisicoes.find(r => r.id == requisitionId);
+        if (reqData) { ui.handleDownloadHistoricPdf(reqData.dados_completos); }
+        else { alert('Não foi possível encontrar os dados da requisição.'); }
+    } else if (target.classList.contains('delete-requisition')) {
+        const requisitionId = target.dataset.requisitionId;
+        if (confirm('Tem certeza que deseja excluir esta requisição? O saldo dos itens será restaurado.')) {
+            
+            // Desativa o botão para evitar cliques duplos
+            target.disabled = true;
+            target.textContent = "Excluindo...";
+
+            const sucesso = await api.deleteRequisition(requisitionId);
+            
+            if (sucesso) {
+                alert('Requisição excluída e saldos restaurados com sucesso!');
+                
+                // Em vez de recarregar tudo, podemos apenas remover a linha da tabela.
+                // Mas recarregar aqui é menos custoso, pois o usuário não está com pressa.
+                // Para manter a consistência, vamos recarregar os dados aqui.
+                const databaseAtualizado = await api.loadInitialData();
+                state.setDatabase(databaseAtualizado);
+                ui.renderRequisicoesEmitidas(); // Redesenha a lista
+            }
+            else { 
+                alert('Falha ao excluir a requisição. Verifique o console para mais detalhes.'); 
+                target.disabled = false; // Reativa o botão em caso de falha
+                target.textContent = "Excluir";
+            }
+        }
+    }
+});
+
 
 initializeApp();

@@ -1,3 +1,5 @@
+// js/state.js - VERSÃO CORRIGIDA
+
 let state = {
     database: {},
     requisicoesSalvas: [],
@@ -37,14 +39,9 @@ export const setDatabase = (newDatabase) => { state.database = newDatabase; };
 export const setConfiguracoes = (newConfig) => { state.configuracoes = newConfig; };
 export const incrementProximoNumeroRequisicao = () => { state.proximoNumeroRequisicao++; };
 export const addRequisicaoSalva = (requisicao) => { state.requisicoesSalvas.push(requisicao); };
-export const updateItemQuantityInDB = (pregaoId, fornecedorId, itemId, quantidadeSolicitada) => {
-    const itemNoBanco = state.database[pregaoId]
-        ?.fornecedores.find(f => f.id === fornecedorId)
-        ?.itens.find(i => i.id === itemId);
-    if (itemNoBanco) {
-        itemNoBanco.quantidadeMax -= quantidadeSolicitada;
-    }
-};
+
+// A função updateItemQuantityInDB foi removida daqui.
+
 export const resetCurrentState = () => {
     state.currentState = {
         activeView: 'requisicao',

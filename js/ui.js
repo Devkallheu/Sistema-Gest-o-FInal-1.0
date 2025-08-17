@@ -73,13 +73,13 @@ export function startNewRequisition() {
     dom.contatoInput.value = '';
     dom.emailInput.value = '';
     dom.anexosInput.value = 'Nota de crédito, SICAFi e Certidão do TCU consolidada em dias.';
-    const justificativaPadrao = `1.1 1.1 Nos termos do contido no Art. 13 da Port. Min N° 305, de 24 Mai 95 - Instruções Gerais para realização de
-Licitações no Comando do Exército (IG 12-02) solicito providências junto ao Ordenador de Despesas, no sentido de
-aprovar a requisição do material/serviço.
-1.2. A requisição está alinhada com Objetivo Estratégico Organizacional OE 05, Meta 5.2.1. Aprimorar a gestão de
-recursos no Cmdo Fron AC/ 4 BIS, Ação 5.2.1.2 do Plano de Gestão do Cmdo Fron AC/4 BIS no que diz respeito à
-provisão, manutenção e reversão dos meios e serviços necessários à execução das diversas funções. Deste modo,
-solicito que seja autorizado a aquisição do material de consumo especificado:`;
+    const justificativaPadrao = `1.1. Nos termos do contido no Art. 13 da Port. Min N° 305, de 24 Mai 95 - Instruções Gerais para realização
+    de Licitações no Comando do Exército (IG 12-02) solicito providências junto ao Ordenador de Despesas, no
+    sentido de aprovar a requisição do material/serviço.
+                                 1.2. A requisição está alinhada com Objetivo Estratégico Organizacional OE 05, Meta 5.2.1. Aprimorar a 
+                                 gestão de recursos no Cmdo Fron AC/ 4 BIS, Ação 5.2.1.2 do Plano de Gestão do Cmdo Fron AC/4 BIS no 
+                                 que diz respeito à provisão, manutenção e reversão dos meios e serviços necessários à execução das diversas funções. Deste modo, solicito que seja autorizado a aquisição do material de consumo 
+                                 especificado:`;
     dom.justificativaInput.value = justificativaPadrao;
     dom.notaCreditoInput.value = '';
     dom.planoInternoInput.value = '';

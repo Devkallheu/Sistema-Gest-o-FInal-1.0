@@ -84,3 +84,4 @@ export const editPregaoId = document.getElementById('editPregaoId');
 export const editPregaoNumero = document.getElementById('editPregaoNumero');
 export const editPregaoObjeto = document.getElementById('editPregaoObjeto');
 export const btnCancelEdit = document.getElementById('btnCancelEdit');
+export const previewJustificativa = document.getElementById('previewJustificativa');

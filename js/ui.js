@@ -72,14 +72,12 @@ export function startNewRequisition() {
     dom.destinoInput.value = '';
     dom.contatoInput.value = '';
     dom.emailInput.value = '';
-    dom.anexosInput.value = 'Nota de crédito, SICAFi e Certidão do TCU consolidada em dias.';
+    dom.anexosInput.value = 'Nota de crédito, SICAFi, CADINe Certidão do TCU consolidada em dias.';
+    // SUBSTITUA A DEFINIÇÃO ANTIGA DA VARIÁVEL POR ESTA:
     const justificativaPadrao = `1.1. Nos termos do contido no Art. 13 da Port. Min N° 305, de 24 Mai 95 - Instruções Gerais para realização
-    de Licitações no Comando do Exército (IG 12-02) solicito providências junto ao Ordenador de Despesas, no
-    sentido de aprovar a requisição do material/serviço.
-                                 1.2. A requisição está alinhada com Objetivo Estratégico Organizacional OE 05, Meta 5.2.1. Aprimorar a 
-                                 gestão de recursos no Cmdo Fron AC/ 4 BIS, Ação 5.2.1.2 do Plano de Gestão do Cmdo Fron AC/4 BIS no 
-                                 que diz respeito à provisão, manutenção e reversão dos meios e serviços necessários à execução das diversas funções. Deste modo, solicito que seja autorizado a aquisição do material de consumo 
-                                 especificado:`;
+de Licitações no Comando do Exército (IG 12-02) solicito providências junto ao Ordenador de Despesas, no sentido de aprovar a requisição do material/serviço.
+1.2. A requisição está alinhada com Objetivo Estratégico Organizacional OE 05, Meta 5.2.1. Aprimorar a gestão de recursos no Cmdo Fron AC/ 4 BIS, Ação 5.2.1.2 do Plano de Gestão do Cmdo Fron AC/4 BIS no 
+que diz respeito à provisão, manutenção e reversão dos meios e serviços necessários à execução das diversas funções. Deste modo, solicito que seja autorizado a aquisição do material de consumo especificado:`;
     dom.justificativaInput.value = justificativaPadrao;
     dom.notaCreditoInput.value = '';
     dom.planoInternoInput.value = '';
@@ -165,6 +163,13 @@ export function renderPreview() {
     dom.btnSave.disabled = false;
     dom.btnSave.classList.remove('bg-gray-400', 'hover:bg-gray-400');
     dom.btnSave.classList.add('bg-teal-600', 'hover:bg-teal-700');
+    dom.previewFornecedor.textContent = currentState.fornecedorData.nome;
+    dom.previewValor.textContent = dom.totalValueEl.textContent;
+
+    // LINHA QUE VOCÊ PRECISA ADICIONAR
+    dom.previewJustificativa.textContent = currentState.justificativa; 
+
+    dom.finalActions.classList.remove('hidden');
 }
 
 export async function saveRequisition() {

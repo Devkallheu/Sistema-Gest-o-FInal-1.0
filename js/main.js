@@ -1,4 +1,4 @@
-// js/main.js - VERSÃO CORRIGIDA PARA EVITAR DUPLICIDADE
+// js/main.js - VERSÃO FINAL
 
 import * as dom from './dom.js';
 import * as state from './state.js';
@@ -174,36 +174,39 @@ async function handleEditPregaoSubmit(e) {
 }
 
 function setupEventListeners() {
-    dom.loginForm.addEventListener('submit', auth.handleLogin);
-    dom.logoutButton.addEventListener('click', auth.handleLogout);
-    dom.homeButton.addEventListener('click', ui.startNewRequisition);
-    dom.btnNewRequisition.addEventListener('click', () => {
-        ui.startNewRequisition();
-        ui.navigateToStep(1); 
-    });
-    dom.tabRequisicao.addEventListener('click', () => ui.switchView('requisicao'));
-    dom.tabGerenciar.addEventListener('click', () => ui.switchView('gerenciar'));
-    dom.tabEmitidas.addEventListener('click', () => ui.switchView('emitidas'));
-    dom.tabConfiguracoes.addEventListener('click', () => ui.switchView('configuracoes'));
-    dom.tabBackup.addEventListener('click', () => ui.switchView('backup'));
-    dom.btnStep1.addEventListener('click', handleStep1);
-    dom.btnStep2.addEventListener('click', handleStep2);
-    dom.btnStep3.addEventListener('click', handleStep3);
-    dom.btnDownloadPDF.addEventListener('click', () => ui.handleDownloadHistoricPdf(state.getCurrentState()));
-    
-    // A LINHA PROBLEMÁTICA FOI REMOVIDA DAQUI:
-    // dom.btnSave.addEventListener('click', ui.saveRequisition); 
+    // Adiciona um listener robusto que só funciona se o elemento existir
+    const addListener = (element, event, handler) => {
+        if (element) {
+            element.addEventListener(event, handler);
+        }
+    };
 
-    dom.btnNewRequisition.addEventListener('click', ui.startNewRequisition);
-    dom.pregaoInput.addEventListener('input', () => dom.errorStep1.classList.add('hidden'));
-    document.getElementById('backToStep1').addEventListener('click', () => ui.navigateToStep(1));
-    document.getElementById('backToStep2').addEventListener('click', () => ui.navigateToStep(2));
-    document.getElementById('backToStep3').addEventListener('click', () => {
+    addListener(dom.loginForm, 'submit', auth.handleLogin);
+    addListener(dom.logoutButton, 'click', auth.handleLogout);
+    addListener(dom.homeButton, 'click', ui.startNewRequisition);
+    addListener(dom.btnNewRequisition, 'click', () => { ui.startNewRequisition(); ui.navigateToStep(1); });
+    addListener(dom.tabRequisicao, 'click', () => ui.switchView('requisicao'));
+    addListener(dom.tabGerenciar, 'click', () => ui.switchView('gerenciar'));
+    addListener(dom.tabEmitidas, 'click', () => ui.switchView('emitidas'));
+    addListener(dom.tabConfiguracoes, 'click', () => ui.switchView('configuracoes'));
+    addListener(dom.tabBackup, 'click', () => ui.switchView('backup'));
+    addListener(dom.btnStep1, 'click', handleStep1);
+    addListener(dom.btnStep2, 'click', handleStep2);
+    addListener(dom.btnStep3, 'click', handleStep3);
+    addListener(dom.btnDownloadPDF, 'click', () => ui.handleDownloadHistoricPdf(state.getCurrentState()));
+    addListener(dom.btnSave, 'click', async () => {
+        dom.btnSave.disabled = true;
+        await ui.saveRequisition();
+    });
+    addListener(dom.pregaoInput, 'input', () => dom.errorStep1.classList.add('hidden'));
+    addListener(document.getElementById('backToStep1'), 'click', () => ui.navigateToStep(1));
+    addListener(document.getElementById('backToStep2'), 'click', () => ui.navigateToStep(2));
+    addListener(document.getElementById('backToStep3'), 'click', () => {
         dom.finalActions.classList.remove('hidden');
         dom.startNewAction.classList.add('hidden');
         ui.navigateToStep(3);
     });
-    dom.fornecedoresList.addEventListener('click', (e) => {
+    addListener(dom.fornecedoresList, 'click', (e) => {
         const targetDiv = e.target.closest('div.p-4');
         if (!targetDiv) return;
         const radio = targetDiv.querySelector('input[name="fornecedor"]');
@@ -214,7 +217,7 @@ function setupEventListeners() {
             dom.errorStep2.classList.add('hidden');
         }
     });
-    dom.itemsTableBody.addEventListener('change', (e) => {
+    addListener(dom.itemsTableBody, 'change', (e) => {
         const target = e.target;
         const itemId = target.dataset.itemId;
         const currentState = state.getCurrentState();
@@ -240,112 +243,175 @@ function setupEventListeners() {
         state.updateCurrentState({ selectedItems: currentState.selectedItems });
         ui.updateTotal();
     });
-    dom.adminPregoesContainer.addEventListener('submit', handleAdminFormSubmit);
-    dom.adminPregoesContainer.addEventListener('click', handleAdminClick);
-    dom.formAddPregao.addEventListener('submit', handleAdminFormSubmit);
-    dom.formAddUser.addEventListener('submit', auth.handleAddUser);
-    dom.usersList.addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-user')) {
-            auth.handleDeleteUser(e.target.dataset.username);
+    addListener(dom.listRequisicoesEmitidas, 'click', async (e) => {
+        const target = e.target;
+        if (target.classList.contains('download-historic-pdf')) {
+            const requisitionId = target.dataset.requisitionId;
+            const requisicoes = await api.getSavedRequisitions();
+            const reqData = requisicoes.find(r => r.id == requisitionId);
+            if (reqData) { ui.handleDownloadHistoricPdf(reqData.dados_completos); }
+            else { alert('Não foi possível encontrar os dados da requisição.'); }
+        } else if (target.classList.contains('delete-requisition')) {
+            const requisitionId = target.dataset.requisitionId;
+            if (confirm('Tem certeza que deseja excluir esta requisição? O saldo dos itens será restaurado.')) {
+                target.disabled = true;
+                target.textContent = "Excluindo...";
+                const sucesso = await api.deleteRequisition(requisitionId);
+                if (sucesso) {
+                    alert('Requisição excluída e saldos restaurados com sucesso!');
+                    const databaseAtualizado = await api.loadInitialData();
+                    state.setDatabase(databaseAtualizado);
+                    ui.renderRequisicoesEmitidas();
+                } else {
+                    alert('Falha ao excluir a requisição.');
+                    target.disabled = false;
+                    target.textContent = "Excluir";
+                }
+            }
         }
     });
-    dom.formConfiguracoes.addEventListener('submit', handleSaveConfig);
-    dom.formEditPregao.addEventListener('submit', handleEditPregaoSubmit);
-    dom.btnCancelEdit.addEventListener('click', ui.closeEditModal);
-}
+    addListener(dom.adminPregoesContainer, 'submit', handleAdminFormSubmit);
+    addListener(dom.adminPregoesContainer, 'click', handleAdminClick);
+    addListener(dom.formAddPregao, 'submit', handleAdminFormSubmit);
+    addListener(dom.formConfiguracoes, 'submit', handleSaveConfig);
+    addListener(dom.formEditPregao, 'submit', handleEditPregaoSubmit);
+    addListener(dom.btnCancelEdit, 'click', ui.closeEditModal);
 
-async function initializeApp() {
-    setupEventListeners();
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) {
-        console.log("Sessão de usuário encontrada!", session.user);
-        state.setLoggedInUser({
-            id: session.user.id,
-            email: session.user.email,
-            role: 'admin',
-            username: session.user.email.split('@')[0]
-        });
-        const [dbData, ultimoNumero, settingsData] = await Promise.all([
-            api.loadInitialData(),
-            api.getLatestRequisitionNumber(),
-            api.getSettings()
-        ]);
-        const proximoNumeroRequisicao = ultimoNumero + 1;
-        state.setInitialData({
-            database: dbData,
-            requisicoesSalvas: [],
-            proximoNumeroRequisicao: proximoNumeroRequisicao,
-            users: [],
-            configuracoes: settingsData
-        });
-        dom.loginView.classList.add('hidden');
-        dom.appContainer.classList.remove('hidden');
-        ui.setupUIForUser();
-    } else {
-        console.log("Nenhuma sessão encontrada. Mostrando tela de login.");
-        dom.loginView.classList.remove('hidden');
-        dom.appContainer.classList.add('hidden');
-    }
-}
+    // --- NOVOS LISTENERS PARA GERENCIAMENTO DE USUÁRIOS ---
+    addListener(dom.viewGerenciar, 'submit', async (e) => {
+        if (e.target.id === 'formAddNewUser') {
+            e.preventDefault();
+            const form = e.target;
+            const button = form.querySelector('button[type="submit"]');
+            const statusEl = document.getElementById('addUserStatus');
+            const email = document.getElementById('newUserInputEmail').value;
+            const password = document.getElementById('newUserInputPassword').value;
+            const role = document.getElementById('newUserInputRole').value;
 
-// ESTE É O LISTENER CORRETO E ÚNICO QUE DEVE EXISTIR PARA O BOTÃO SALVAR
-// NOVO BLOCO PARA SUBSTITUIR O ANTIGO
-dom.btnSave.addEventListener('click', async () => {
-    dom.btnSave.disabled = true;
-    dom.btnSave.textContent = 'A salvar...';
+            button.disabled = true;
+            button.textContent = 'Adicionando...';
+            statusEl.textContent = '';
+            statusEl.classList.remove('text-red-500', 'text-green-500');
 
-    // A função saveRequisition agora cuida da atualização da UI e do estado local.
-    const { error } = await ui.saveRequisition();
+            const { error } = await api.createNewUser(email, password, role);
 
-    // A UI já foi atualizada de forma otimista.
-    // Não precisamos mais recarregar todos os dados com api.loadInitialData().
-
-    if (error) {
-        // O erro já é tratado dentro de saveRequisition, mas podemos reativar o botão aqui.
-        dom.btnSave.disabled = false;
-        dom.btnSave.textContent = 'Salvar e Concluir';
-    }
-    // Se for sucesso, o botão já está escondido, então não fazemos nada.
-});
-
-// ESTE É O LISTENER CORRETO PARA A LISTA DE REQUISIÇÕES
-// NOVO BLOCO PARA SUBSTITUIR O ANTIGO
-dom.listRequisicoesEmitidas.addEventListener('click', async (e) => {
-    const target = e.target;
-    if (target.classList.contains('download-historic-pdf')) {
-        const requisitionId = target.dataset.requisitionId;
-        const requisicoes = await api.getSavedRequisitions();
-        const reqData = requisicoes.find(r => r.id == requisitionId);
-        if (reqData) { ui.handleDownloadHistoricPdf(reqData.dados_completos); }
-        else { alert('Não foi possível encontrar os dados da requisição.'); }
-    } else if (target.classList.contains('delete-requisition')) {
-        const requisitionId = target.dataset.requisitionId;
-        if (confirm('Tem certeza que deseja excluir esta requisição? O saldo dos itens será restaurado.')) {
-            
-            // Desativa o botão para evitar cliques duplos
-            target.disabled = true;
-            target.textContent = "Excluindo...";
-
-            const sucesso = await api.deleteRequisition(requisitionId);
-            
-            if (sucesso) {
-                alert('Requisição excluída e saldos restaurados com sucesso!');
-                
-                // Em vez de recarregar tudo, podemos apenas remover a linha da tabela.
-                // Mas recarregar aqui é menos custoso, pois o usuário não está com pressa.
-                // Para manter a consistência, vamos recarregar os dados aqui.
-                const databaseAtualizado = await api.loadInitialData();
-                state.setDatabase(databaseAtualizado);
-                ui.renderRequisicoesEmitidas(); // Redesenha a lista
+            if (error) {
+                statusEl.textContent = `Erro: ${error.message}`;
+                statusEl.classList.add('text-red-500');
+            } else {
+                statusEl.textContent = 'Usuário adicionado com sucesso!';
+                statusEl.classList.add('text-green-500');
+                form.reset();
+                await ui.renderUserManagementView(); // Recarrega a lista de usuários
             }
-            else { 
-                alert('Falha ao excluir a requisição. Verifique o console para mais detalhes.'); 
-                target.disabled = false; // Reativa o botão em caso de falha
-                target.textContent = "Excluir";
+            button.disabled = false;
+            button.textContent = 'Adicionar Usuário';
+        }
+    });
+
+    addListener(dom.viewGerenciar, 'change', async (e) => {
+        if (e.target.classList.contains('user-role-select')) {
+            const select = e.target;
+            const userId = select.dataset.userId;
+            const newRole = select.value;
+            
+            select.disabled = true;
+            const { error } = await api.updateUserRole(userId, newRole);
+            select.disabled = false;
+
+            if (error) {
+                alert(`Falha ao atualizar o papel do usuário: ${error.message}`);
+                await ui.renderUserManagementView(); // Recarrega para reverter a mudança visual
+            } else {
+                // Opcional: mostrar um feedback de sucesso
             }
         }
-    }
-});
+    });
+}
 
+// js/main.js - VERSÃO DE DIAGNÓSTICO
+
+// ... (o resto do código do main.js fica aqui em cima) ...
+
+async function initializeApp() {
+    console.log("--- INICIANDO DIAGNÓSTICO ---");
+    setupEventListeners();
+
+    // PASSO 1: VERIFICAR A SESSÃO
+    console.log("Passo 1: Verificando a sessão do usuário...");
+    const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+
+    if (sessionError) {
+        console.error("ERRO CRÍTICO no Passo 1: Não foi possível obter a sessão.", sessionError);
+        return;
+    }
+
+    if (!session) {
+        console.log("Resultado do Passo 1: Nenhuma sessão encontrada. Mostrando tela de login.");
+        dom.loginView.classList.remove('hidden');
+        dom.appContainer.classList.add('hidden');
+        console.log("--- FIM DO DIAGNÓSTICO ---");
+        return;
+    }
+
+    console.log("Resultado do Passo 1: Sessão encontrada para o usuário:", session.user.email);
+    console.log("ID do usuário da sessão:", session.user.id);
+
+    // PASSO 2: BUSCAR O PERFIL NA TABELA 'profiles'
+    console.log("Passo 2: Tentando buscar o perfil na tabela 'profiles'...");
+    const { data: profile, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('*') // Vamos pegar todas as colunas para ver tudo
+        .eq('id', session.user.id)
+        .single();
+
+    if (profileError) {
+        console.error("ERRO no Passo 2: A consulta à tabela 'profiles' falhou.", profileError.message);
+    }
+
+    console.log("Resultado do Passo 2: Dados recebidos da tabela 'profiles':", profile);
+
+    // PASSO 3: DECIDIR O PAPEL (ROLE)
+    console.log("Passo 3: Decidindo o papel (role) do usuário...");
+    let finalRole = 'requisitante'; // Começa como requisitante por padrão
+
+    if (profile && profile.role) {
+        console.log(`Perfil encontrado! O 'role' na tabela é: "${profile.role}".`);
+        finalRole = profile.role;
+    } else {
+        console.warn("AVISO: Perfil não encontrado ou a coluna 'role' está vazia/nula. Usando o papel padrão 'requisitante'.");
+    }
+
+    console.log(`Resultado do Passo 3: O papel final definido para este login é: "${finalRole}".`);
+
+    // PASSO 4: CONFIGURAR O ESTADO E A UI
+    console.log("Passo 4: Configurando o estado global e a interface do usuário...");
+    state.setLoggedInUser({
+        id: session.user.id,
+        email: session.user.email,
+        role: finalRole, // Usa o papel que decidimos no passo 3
+        username: session.user.email.split('@')[0]
+    });
+
+    const [dbData, ultimoNumero, settingsData] = await Promise.all([
+        api.loadInitialData(),
+        api.getLatestRequisitionNumber(),
+        api.getSettings()
+    ]);
+    const proximoNumeroRequisicao = ultimoNumero + 1;
+    state.setInitialData({
+        database: dbData,
+        requisicoesSalvas: [],
+        proximoNumeroRequisicao: proximoNumeroRequisicao,
+        users: [],
+        configuracoes: settingsData
+    });
+
+    dom.loginView.classList.add('hidden');
+    dom.appContainer.classList.remove('hidden');
+    ui.setupUIForUser();
+    console.log("Resultado do Passo 4: Interface renderizada com o papel:", finalRole);
+    console.log("--- FIM DO DIAGNÓSTICO ---");
+}
 
 initializeApp();

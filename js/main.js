@@ -1,4 +1,4 @@
-// js/main.js - VERSÃO FINAL
+// js/main.js - VERSÃO FINAL COMPLETA E CORRIGIDA
 
 import * as dom from './dom.js';
 import * as state from './state.js';
@@ -97,8 +97,21 @@ async function handleAdminFormSubmit(e) {
         const objeto = document.getElementById('adminPregaoObjeto').value.trim();
         if (!numeroPregao || !objeto) return alert('Por favor, preencha todos os campos do pregão.');
         const { error } = await api.addPregao(numeroPregao, objeto);
-        if (error) { alert('Falha ao adicionar o pregão. Erro: ' + error.message); }
-        else { alert('Pregão adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }
+       // CÓDIGO NOVO em main.js
+if (error) {
+    // Verifica se a mensagem de erro é sobre chave duplicada
+    if (error.message.includes('duplicate key value violates unique constraint')) {
+        alert('Esse pregão já está cadastrado, por favor, confirme o número correto da contratação e tente novamente.');
+    } else {
+        // Para qualquer outro erro, mostra a mensagem técnica
+        alert('Falha ao adicionar o pregão. Erro: ' + error.message);
+    }
+} else {
+    alert('Pregão adicionado com sucesso!');
+    form.reset();
+    ui.renderAdminView();
+}
+
     } else if (form.classList.contains('formAddFornecedor')) {
         const nome = form.elements.nome.value.trim();
         const cnpj = form.elements.cnpj.value.trim();
@@ -174,7 +187,6 @@ async function handleEditPregaoSubmit(e) {
 }
 
 function setupEventListeners() {
-    // Adiciona um listener robusto que só funciona se o elemento existir
     const addListener = (element, event, handler) => {
         if (element) {
             element.addEventListener(event, handler);
@@ -276,69 +288,11 @@ function setupEventListeners() {
     addListener(dom.formConfiguracoes, 'submit', handleSaveConfig);
     addListener(dom.formEditPregao, 'submit', handleEditPregaoSubmit);
     addListener(dom.btnCancelEdit, 'click', ui.closeEditModal);
-
-    // --- NOVOS LISTENERS PARA GERENCIAMENTO DE USUÁRIOS ---
-    addListener(dom.viewGerenciar, 'submit', async (e) => {
-        if (e.target.id === 'formAddNewUser') {
-            e.preventDefault();
-            const form = e.target;
-            const button = form.querySelector('button[type="submit"]');
-            const statusEl = document.getElementById('addUserStatus');
-            const email = document.getElementById('newUserInputEmail').value;
-            const password = document.getElementById('newUserInputPassword').value;
-            const role = document.getElementById('newUserInputRole').value;
-
-            button.disabled = true;
-            button.textContent = 'Adicionando...';
-            statusEl.textContent = '';
-            statusEl.classList.remove('text-red-500', 'text-green-500');
-
-            const { error } = await api.createNewUser(email, password, role);
-
-            if (error) {
-                statusEl.textContent = `Erro: ${error.message}`;
-                statusEl.classList.add('text-red-500');
-            } else {
-                statusEl.textContent = 'Usuário adicionado com sucesso!';
-                statusEl.classList.add('text-green-500');
-                form.reset();
-                await ui.renderUserManagementView(); // Recarrega a lista de usuários
-            }
-            button.disabled = false;
-            button.textContent = 'Adicionar Usuário';
-        }
-    });
-
-    addListener(dom.viewGerenciar, 'change', async (e) => {
-        if (e.target.classList.contains('user-role-select')) {
-            const select = e.target;
-            const userId = select.dataset.userId;
-            const newRole = select.value;
-            
-            select.disabled = true;
-            const { error } = await api.updateUserRole(userId, newRole);
-            select.disabled = false;
-
-            if (error) {
-                alert(`Falha ao atualizar o papel do usuário: ${error.message}`);
-                await ui.renderUserManagementView(); // Recarrega para reverter a mudança visual
-            } else {
-                // Opcional: mostrar um feedback de sucesso
-            }
-        }
-    });
 }
 
-// js/main.js - VERSÃO DE DIAGNÓSTICO
-
-// ... (o resto do código do main.js fica aqui em cima) ...
-
 async function initializeApp() {
-    console.log("--- INICIANDO DIAGNÓSTICO ---");
     setupEventListeners();
 
-    // PASSO 1: VERIFICAR A SESSÃO
-    console.log("Passo 1: Verificando a sessão do usuário...");
     const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
 
     if (sessionError) {
@@ -347,21 +301,14 @@ async function initializeApp() {
     }
 
     if (!session) {
-        console.log("Resultado do Passo 1: Nenhuma sessão encontrada. Mostrando tela de login.");
         dom.loginView.classList.remove('hidden');
         dom.appContainer.classList.add('hidden');
-        console.log("--- FIM DO DIAGNÓSTICO ---");
         return;
     }
 
-    console.log("Resultado do Passo 1: Sessão encontrada para o usuário:", session.user.email);
-    console.log("ID do usuário da sessão:", session.user.id);
-
-    // PASSO 2: BUSCAR O PERFIL NA TABELA 'profiles'
-    console.log("Passo 2: Tentando buscar o perfil na tabela 'profiles'...");
     const { data: profile, error: profileError } = await supabaseClient
         .from('profiles')
-        .select('*') // Vamos pegar todas as colunas para ver tudo
+        .select('*')
         .eq('id', session.user.id)
         .single();
 
@@ -369,27 +316,15 @@ async function initializeApp() {
         console.error("ERRO no Passo 2: A consulta à tabela 'profiles' falhou.", profileError.message);
     }
 
-    console.log("Resultado do Passo 2: Dados recebidos da tabela 'profiles':", profile);
-
-    // PASSO 3: DECIDIR O PAPEL (ROLE)
-    console.log("Passo 3: Decidindo o papel (role) do usuário...");
-    let finalRole = 'requisitante'; // Começa como requisitante por padrão
-
+    let finalRole = 'requisitante';
     if (profile && profile.role) {
-        console.log(`Perfil encontrado! O 'role' na tabela é: "${profile.role}".`);
         finalRole = profile.role;
-    } else {
-        console.warn("AVISO: Perfil não encontrado ou a coluna 'role' está vazia/nula. Usando o papel padrão 'requisitante'.");
     }
 
-    console.log(`Resultado do Passo 3: O papel final definido para este login é: "${finalRole}".`);
-
-    // PASSO 4: CONFIGURAR O ESTADO E A UI
-    console.log("Passo 4: Configurando o estado global e a interface do usuário...");
     state.setLoggedInUser({
         id: session.user.id,
         email: session.user.email,
-        role: finalRole, // Usa o papel que decidimos no passo 3
+        role: finalRole,
         username: session.user.email.split('@')[0]
     });
 
@@ -410,8 +345,9 @@ async function initializeApp() {
     dom.loginView.classList.add('hidden');
     dom.appContainer.classList.remove('hidden');
     ui.setupUIForUser();
-    console.log("Resultado do Passo 4: Interface renderizada com o papel:", finalRole);
-    console.log("--- FIM DO DIAGNÓSTICO ---");
 }
 
-initializeApp();
+document.addEventListener('DOMContentLoaded', () => {
+    dom.initializeDomElements();
+    initializeApp();
+});

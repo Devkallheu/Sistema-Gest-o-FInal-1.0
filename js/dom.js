@@ -1,87 +1,113 @@
-export const loginView = document.getElementById('viewLogin');
-export const appContainer = document.getElementById('appContainer');
-export const loginForm = document.getElementById('loginForm');
-export const loginError = document.getElementById('loginError');
-export const welcomeMessage = document.getElementById('welcomeMessage');
-export const logoutButton = document.getElementById('logoutButton');
-export const userManagementSection = document.getElementById('userManagementSection');
-export const usersList = document.getElementById('usersList');
-export const formAddUser = document.getElementById('formAddUser');
-export const addUserError = document.getElementById('addUserError');
-export const homeButton = document.getElementById('homeButton');
-export const viewRequisicao = document.getElementById('viewRequisicao');
-export const viewGerenciar = document.getElementById('viewGerenciar');
-export const viewEmitidas = document.getElementById('viewEmitidas');
-export const viewConfiguracoes = document.getElementById('viewConfiguracoes');
-export const viewBackup = document.getElementById('viewBackup');
-export const tabRequisicao = document.getElementById('tabRequisicao');
-export const tabGerenciar = document.getElementById('tabGerenciar');
-export const tabEmitidas = document.getElementById('tabEmitidas');
-export const tabConfiguracoes = document.getElementById('tabConfiguracoes');
-export const tabBackup = document.getElementById('tabBackup');
-export const steps = { 1: document.getElementById('step1'), 2: document.getElementById('step2'), 3: document.getElementById('step3'), 4: document.getElementById('step4'), 5: document.getElementById('step5') };
-export const pregaoInput = document.getElementById('pregaoInput');
-export const btnStep1 = document.getElementById('btnStep1');
-export const errorStep1 = document.getElementById('errorStep1');
-export const pregaoInfo = document.getElementById('pregaoInfo');
-export const fornecedoresList = document.getElementById('fornecedoresList');
-export const btnStep2 = document.getElementById('btnStep2');
-export const errorStep2 = document.getElementById('errorStep2');
-export const fornecedorInfo = document.getElementById('fornecedorInfo');
-export const itemsTableBody = document.getElementById('itemsTableBody');
-export const btnStep3 = document.getElementById('btnStep3');
-export const errorStep3 = document.getElementById('errorStep3');
-export const totalValueEl = document.getElementById('totalValue');
-export const setorInput = document.getElementById('setorInput');
-export const nupInput = document.getElementById('nupInput');
-export const responsavelInput = document.getElementById('responsavelInput');
-export const identidadeInput = document.getElementById('identidadeInput');
-export const destinoInput = document.getElementById('destinoInput');
-export const contatoInput = document.getElementById('contatoInput');
-export const emailInput = document.getElementById('emailInput');
-export const anexosInput = document.getElementById('anexosInput');
-export const justificativaInput = document.getElementById('justificativaInput');
-export const notaCreditoInput = document.getElementById('notaCreditoInput');
-export const planoInternoInput = document.getElementById('planoInternoInput');
-export const ptresInput = document.getElementById('ptresInput');
-export const fiscalAdmInput = document.getElementById('fiscalAdmInput');
-export const fiscalAdmFuncInput = document.getElementById('fiscalAdmFuncInput');
-export const conformadorInput = document.getElementById('conformadorInput');
-export const conformadorFuncInput = document.getElementById('conformadorFuncInput');
-export const ordenadorInput = document.getElementById('ordenadorInput');
-export const ordenadorFuncInput = document.getElementById('ordenadorFuncInput');
-export const previewNumRequisicao = document.getElementById('previewNumRequisicao');
-export const previewSetor = document.getElementById('previewSetor');
-export const previewPregao = document.getElementById('previewPregao');
-export const previewFornecedor = document.getElementById('previewFornecedor');
-export const previewValor = document.getElementById('previewValor');
-export const finalActions = document.getElementById('finalActions');
-export const btnDownloadPDF = document.getElementById('btnDownloadPDF');
-export const btnSave = document.getElementById('btnSave');
-export const saveSuccess = document.getElementById('saveSuccess');
-export const startNewAction = document.getElementById('startNewAction');
-export const btnNewRequisition = document.getElementById('btnNewRequisition');
-export const adminPregoesContainer = document.getElementById('adminPregoesContainer');
-export const formAddPregao = document.getElementById('formAddPregao');
-export const errorAdminPregao = document.getElementById('errorAdminPregao');
-export const listRequisicoesEmitidas = document.getElementById('listRequisicoesEmitidas');
-export const btnCreateBackup = document.getElementById('btnCreateBackup');
-export const backupFileInput = document.getElementById('backupFileInput');
-export const btnRestoreBackup = document.getElementById('btnRestoreBackup');
-export const restoreStatus = document.getElementById('restoreStatus');
-export const formConfiguracoes = document.getElementById('formConfiguracoes');
-export const defaultFiscalAdmInput = document.getElementById('defaultFiscalAdmInput');
-export const defaultFiscalAdmFuncInput = document.getElementById('defaultFiscalAdmFuncInput');
-export const defaultConformadorInput = document.getElementById('defaultConformadorInput');
-export const defaultConformadorFuncInput = document.getElementById('defaultConformadorFuncInput');
-export const defaultOrdenadorInput = document.getElementById('defaultOrdenadorInput');
-export const defaultOrdenadorFuncInput = document.getElementById('defaultOrdenadorFuncInput');
-export const configSaveSuccess = document.getElementById('configSaveSuccess');
-export const editModal = document.getElementById('editModal');
-export const editModalTitle = document.getElementById('editModalTitle');
-export const formEditPregao = document.getElementById('formEditPregao');
-export const editPregaoId = document.getElementById('editPregaoId');
-export const editPregaoNumero = document.getElementById('editPregaoNumero');
-export const editPregaoObjeto = document.getElementById('editPregaoObjeto');
-export const btnCancelEdit = document.getElementById('btnCancelEdit');
-export const previewJustificativa = document.getElementById('previewJustificativa');
+// js/dom.js - VERSÃO FINAL CORRIGIDA
+
+// 1. Exportamos as variáveis vazias (let) para que possam ser preenchidas depois.
+export let loginView, appContainer, loginForm, loginError, welcomeMessage, logoutButton,
+           homeButton, viewRequisicao, viewGerenciar, viewEmitidas, viewConfiguracoes, viewBackup,
+           tabRequisicao, tabGerenciar, tabEmitidas, tabConfiguracoes, tabBackup, steps,
+           pregaoInput, btnStep1, errorStep1, pregaoInfo, fornecedoresList, btnStep2, errorStep2,
+           fornecedorInfo, itemsTableBody, btnStep3, errorStep3, totalValueEl, setorInput,
+           nupInput, responsavelInput, identidadeInput, destinoInput, contatoInput, emailInput,
+           anexosInput, justificativaInput, notaCreditoInput, planoInternoInput, ptresInput,
+           fiscalAdmInput, fiscalAdmFuncInput, conformadorInput, conformadorFuncInput,
+           ordenadorInput, ordenadorFuncInput, previewNumRequisicao, previewSetor, previewPregao,
+           previewFornecedor, previewValor, finalActions, btnDownloadPDF, btnSave, saveSuccess,
+           startNewAction, btnNewRequisition, adminPregoesContainer, formAddPregao,
+           errorAdminPregao, listRequisicoesEmitidas, formConfiguracoes, configSaveSuccess,
+           userManagementSection, usersList, formAddUser, addUserError,
+           defaultFiscalAdmInput, defaultFiscalAdmFuncInput, defaultConformadorInput,
+
+           defaultConformadorFuncInput, defaultOrdenadorInput, defaultOrdenadorFuncInput,
+           btnCreateBackup, backupFileInput, btnRestoreBackup, restoreStatus, editModal,
+           editModalTitle, formEditPregao, editPregaoId, editPregaoNumero,
+           editPregaoObjeto, btnCancelEdit, previewJustificativa;
+
+// 2. Criamos uma função que será chamada APENAS quando o HTML estiver pronto.
+export function initializeDomElements() {
+    loginView = document.getElementById('viewLogin');
+    appContainer = document.getElementById('appContainer');
+    loginForm = document.getElementById('loginForm');
+    loginError = document.getElementById('loginError');
+    welcomeMessage = document.getElementById('welcomeMessage');
+    logoutButton = document.getElementById('logoutButton');
+    homeButton = document.getElementById('homeButton');
+    viewRequisicao = document.getElementById('viewRequisicao');
+    viewGerenciar = document.getElementById('viewGerenciar');
+    viewEmitidas = document.getElementById('viewEmitidas');
+    viewConfiguracoes = document.getElementById('viewConfiguracoes');
+    viewBackup = document.getElementById('viewBackup');
+    tabRequisicao = document.getElementById('tabRequisicao');
+    tabGerenciar = document.getElementById('tabGerenciar');
+    tabEmitidas = document.getElementById('tabEmitidas');
+    tabConfiguracoes = document.getElementById('tabConfiguracoes');
+    tabBackup = document.getElementById('tabBackup');
+    steps = { 1: document.getElementById('step1'), 2: document.getElementById('step2'), 3: document.getElementById('step3'), 4: document.getElementById('step4'), 5: document.getElementById('step5') };
+    pregaoInput = document.getElementById('pregaoInput');
+    btnStep1 = document.getElementById('btnStep1');
+    errorStep1 = document.getElementById('errorStep1');
+    pregaoInfo = document.getElementById('pregaoInfo');
+    fornecedoresList = document.getElementById('fornecedoresList');
+    btnStep2 = document.getElementById('btnStep2');
+    errorStep2 = document.getElementById('errorStep2');
+    fornecedorInfo = document.getElementById('fornecedorInfo');
+    itemsTableBody = document.getElementById('itemsTableBody');
+    btnStep3 = document.getElementById('btnStep3');
+    errorStep3 = document.getElementById('errorStep3');
+    totalValueEl = document.getElementById('totalValue');
+    setorInput = document.getElementById('setorInput');
+    nupInput = document.getElementById('nupInput');
+    responsavelInput = document.getElementById('responsavelInput');
+    identidadeInput = document.getElementById('identidadeInput');
+    destinoInput = document.getElementById('destinoInput');
+    contatoInput = document.getElementById('contatoInput');
+    emailInput = document.getElementById('emailInput');
+    anexosInput = document.getElementById('anexosInput');
+    justificativaInput = document.getElementById('justificativaInput');
+    notaCreditoInput = document.getElementById('notaCreditoInput');
+    planoInternoInput = document.getElementById('planoInternoInput');
+    ptresInput = document.getElementById('ptresInput');
+    fiscalAdmInput = document.getElementById('fiscalAdmInput');
+    fiscalAdmFuncInput = document.getElementById('fiscalAdmFuncInput');
+    conformadorInput = document.getElementById('conformadorInput');
+    conformadorFuncInput = document.getElementById('conformadorFuncInput');
+    ordenadorInput = document.getElementById('ordenadorInput');
+    ordenadorFuncInput = document.getElementById('ordenadorFuncInput');
+    previewNumRequisicao = document.getElementById('previewNumRequisicao');
+    previewSetor = document.getElementById('previewSetor');
+    previewPregao = document.getElementById('previewPregao');
+    previewFornecedor = document.getElementById('previewFornecedor');
+    previewValor = document.getElementById('previewValor');
+    finalActions = document.getElementById('finalActions');
+    btnDownloadPDF = document.getElementById('btnDownloadPDF');
+    btnSave = document.getElementById('btnSave');
+    saveSuccess = document.getElementById('saveSuccess');
+    startNewAction = document.getElementById('startNewAction');
+    btnNewRequisition = document.getElementById('btnNewRequisition');
+    adminPregoesContainer = document.getElementById('adminPregoesContainer');
+    formAddPregao = document.getElementById('formAddPregao');
+    errorAdminPregao = document.getElementById('errorAdminPregao');
+    listRequisicoesEmitidas = document.getElementById('listRequisicoesEmitidas');
+    formConfiguracoes = document.getElementById('formConfiguracoes');
+    configSaveSuccess = document.getElementById('configSaveSuccess');
+    userManagementSection = document.getElementById('userManagementSection');
+    usersList = document.getElementById('usersList');
+    formAddUser = document.getElementById('formAddUser');
+    addUserError = document.getElementById('addUserError');
+    defaultFiscalAdmInput = document.getElementById('defaultFiscalAdmInput');
+    defaultFiscalAdmFuncInput = document.getElementById('defaultFiscalAdmFuncInput');
+    defaultConformadorInput = document.getElementById('defaultConformadorInput');
+    defaultConformadorFuncInput = document.getElementById('defaultConformadorFuncInput');
+    defaultOrdenadorInput = document.getElementById('defaultOrdenadorInput');
+    defaultOrdenadorFuncInput = document.getElementById('defaultOrdenadorFuncInput');
+    btnCreateBackup = document.getElementById('btnCreateBackup');
+    backupFileInput = document.getElementById('backupFileInput');
+    btnRestoreBackup = document.getElementById('btnRestoreBackup');
+    restoreStatus = document.getElementById('restoreStatus');
+    editModal = document.getElementById('editModal');
+    editModalTitle = document.getElementById('editModalTitle');
+    formEditPregao = document.getElementById('formEditPregao');
+    editPregaoId = document.getElementById('editPregaoId');
+    editPregaoNumero = document.getElementById('editPregaoNumero');
+    editPregaoObjeto = document.getElementById('editPregaoObjeto');
+    btnCancelEdit = document.getElementById('btnCancelEdit');
+    previewJustificativa = document.getElementById('previewJustificativa');
+}

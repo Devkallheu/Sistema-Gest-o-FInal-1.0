@@ -1,32 +1,19 @@
-// js/ui.js - VERSÃO FINAL COM GERENCIAMENTO DE USUÁRIOS
+// js/ui.js - VERSÃO FINAL COM INICIALIZAÇÃO AUTOMÁTICA
 
 import * as dom from './dom.js';
 import * as state from './state.js';
 import * as api from './api.js';
 import { generatePDF } from './pdfGenerator.js';
 
-// js/ui.js
-
-// ... (o resto do código do ui.js fica aqui em cima) ...
-
-// js/ui.js - VERSÃO FINAL E ROBUSTA
-
-// ... (o resto do código do ui.js fica aqui em cima) ...
-
 export function setupUIForUser() {
     const user = state.getLoggedInUser();
     if (!user) return;
 
-    // LIMPA E PADRONIZA O PAPEL (ROLE)
-    // 1. Remove espaços em branco do início e do fim com .trim()
-    // 2. Converte tudo para minúsculas com .toLowerCase()
     const userRole = user.role ? user.role.trim().toLowerCase() : 'requisitante';
-
     const isAdmin = userRole === 'admin';
 
     dom.welcomeMessage.textContent = `Bem-vindo(a), ${user.username}! (Nível: ${user.role})`;
 
-    // Lógica explícita para mostrar ou esconder as abas
     if (isAdmin) {
         dom.tabGerenciar.style.display = 'block';
         dom.tabConfiguracoes.style.display = 'block';
@@ -37,38 +24,29 @@ export function setupUIForUser() {
         dom.tabBackup.style.display = 'none';
     }
 
-    // Define a visão inicial para todos os usuários
     switchView('requisicao');
+
+    // ALTERAÇÃO ADICIONADA AQUI: Inicia uma nova requisição automaticamente
+    startNewRequisition();
 }
 
-// ... (o resto do código do ui.js continua aqui embaixo) ...
-
-
 export function switchView(viewName) {
-    // Lista dos nomes base das visualizações, exatamente como nos IDs
     const views = ['requisicao', 'emitidas', 'gerenciar', 'configuracoes', 'backup'];
 
     views.forEach(v => {
-        // Constrói os IDs corretos (ex: 'viewRequisicao', 'tabRequisicao')
         const viewId = `view${v.charAt(0).toUpperCase() + v.slice(1)}`;
         const tabId = `tab${v.charAt(0).toUpperCase() + v.slice(1)}`;
-
         const viewEl = document.getElementById(viewId);
         const tabEl = document.getElementById(tabId);
-
-        // Esconde a view e desativa a aba
         if (viewEl) viewEl.classList.add('hidden');
         if (tabEl) tabEl.classList.remove('active');
     });
 
-    // Constrói os IDs da view e da aba que queremos mostrar/ativar
     const viewToShowId = `view${viewName.charAt(0).toUpperCase() + viewName.slice(1)}`;
     const tabToActivateId = `tab${viewName.charAt(0).toUpperCase() + viewName.slice(1)}`;
-
     const viewToShow = document.getElementById(viewToShowId);
     const tabToActivate = document.getElementById(tabToActivateId);
 
-    // Mostra a view e ativa a aba
     if (viewToShow) {
         viewToShow.classList.remove('hidden');
     }
@@ -76,7 +54,6 @@ export function switchView(viewName) {
         tabToActivate.classList.add('active');
     }
 
-    // Executa as funções de renderização específicas para cada view
     if (viewName === 'gerenciar') {
         renderAdminView();
     }
@@ -87,10 +64,6 @@ export function switchView(viewName) {
         loadConfiguracoesView();
     }
 }
-
-
-// ... (o resto do código do ui.js continua aqui embaixo) ...
-
 
 export function navigateToStep(stepNumber) {
     Object.values(dom.steps).forEach(stepEl => stepEl.classList.add('hidden'));
@@ -103,6 +76,10 @@ export function navigateToStep(stepNumber) {
 export function startNewRequisition() {
     state.resetCurrentState();
     const config = state.getConfiguracoes();
+
+    const anexosPadrao = 'Nota de crédito, SICAFi, CADINe Certidão do TCU consolidada em dias.';
+    const justificativaPadrao = `1.1. Nos termos do contido no Art. 13 da Port. Min N° 305, de 24 Mai 95 - Instruções Gerais para realização de Licitações no Comando do Exército (IG 12-02) solicito providências junto ao Ordenador de Despesas, no sentido de aprovar a requisição do material/serviço.\n1.2. A requisição está alinhada com Objetivo Estratégico Organizacional OE 05, Meta 5.2.1. Aprimorar a gestão de recursos no Cmdo Fron AC/ 4 BIS, Ação 5.2.1.2 do Plano de Gestão do Cmdo Fron AC/4 BIS no que diz respeito à provisão, manutenção e reversão dos meios e serviços necessários à execução das diversas funções. Deste modo, solicito que seja autorizado a aquisição do material de consumo especificado:`;
+
     dom.pregaoInput.value = '';
     dom.setorInput.value = '';
     dom.nupInput.value = '';
@@ -111,8 +88,7 @@ export function startNewRequisition() {
     dom.destinoInput.value = '';
     dom.contatoInput.value = '';
     dom.emailInput.value = '';
-    dom.anexosInput.value = 'Nota de crédito, SICAFi, CADINe Certidão do TCU consolidada em dias.';
-    const justificativaPadrao = `1.1. Nos termos do contido no Art. 13 da Port. Min N° 305, de 24 Mai 95 - Instruções Gerais para realização de Licitações no Comando do Exército (IG 12-02) solicito providências junto ao Ordenador de Despesas, no sentido de aprovar a requisição do material/serviço.\n1.2. A requisição está alinhada com Objetivo Estratégico Organizacional OE 05, Meta 5.2.1. Aprimorar a gestão de recursos no Cmdo Fron AC/ 4 BIS, Ação 5.2.1.2 do Plano de Gestão do Cmdo Fron AC/4 BIS no que diz respeito à provisão, manutenção e reversão dos meios e serviços necessários à execução das diversas funções. Deste modo, solicito que seja autorizado a aquisição do material de consumo especificado:`;
+    dom.anexosInput.value = anexosPadrao;
     dom.justificativaInput.value = justificativaPadrao;
     dom.notaCreditoInput.value = '';
     dom.planoInternoInput.value = '';
@@ -124,6 +100,18 @@ export function startNewRequisition() {
     dom.conformadorFuncInput.value = config.conformadorFunc || '';
     dom.ordenadorInput.value = config.ordenador || '';
     dom.ordenadorFuncInput.value = config.ordenadorFunc || '';
+
+    state.updateCurrentState({
+        anexos: anexosPadrao,
+        justificativa: justificativaPadrao,
+        fiscalAdm: config.fiscalAdm || '',
+        fiscalAdmFunc: config.fiscalAdmFunc || '',
+        conformador: config.conformador || '',
+        conformadorFunc: config.conformadorFunc || '',
+        ordenador: config.ordenador || '',
+        ordenadorFunc: config.ordenadorFunc || ''
+    });
+
     navigateToStep(1);
 }
 
@@ -258,7 +246,17 @@ export async function renderRequisicoesEmitidas() {
     let tableHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nº Req.</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Setor</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">`;
     reqsToShow.forEach(req => {
         const reqData = req.dados_completos;
-        tableHTML += `<tr><td class="px-4 py-4 text-sm font-bold text-gray-800">${String(reqData.numero).padStart(4, '0')}</td><td class="px-4 py-4 text-sm text-gray-600">${new Date(reqData.data).toLocaleDateString('pt-BR')}</td><td class="px-4 py-4 text-sm text-gray-600">${reqData.setorRequisitante}</td><td class="px-4 py-4 text-sm font-semibold text-gray-800">R$ ${reqData.valorTotal.toFixed(2).replace('.', ',')}</td><td class="px-4 py-4 text-sm"><button class="download-historic-pdf text-blue-600 hover:text-blue-800" data-requisition-id="${req.id}">Baixar PDF</button>${loggedInUser.role === 'admin' ? `<button class="delete-requisition text-red-500 hover:text-red-700 ml-4 font-semibold" data-requisition-id="${req.id}">Excluir</button>` : ''}</td></tr>`;
+        tableHTML += `<tr><td class="px-4 py-4 text-sm font-bold text-gray-800">${String(reqData.numero).padStart(4, '0')}</td><td class="px-4 py-4 text-sm text-gray-600">${new Date(reqData.data).toLocaleDateString('pt-BR')}</td><td class="px-4 py-4 text-sm text-gray-600">${reqData.setorRequisitante}</td><td class="px-4 py-4 text-sm font-semibold text-gray-800">R$ ${reqData.valorTotal.toFixed(2).replace('.', ',')}</td><td class="px-4 py-4 text-sm">
+  <button class="download-historic-pdf text-blue-600 hover:text-blue-800"
+          data-requisition-id="${req.id}">
+    Baixar PDF
+  </button>
+  <button class="delete-requisition text-red-500 hover:text-red-700 ml-4 font-semibold"
+          data-requisition-id="${req.id}">
+    Excluir
+  </button>
+</td>
+</tr>`;
     });
     tableHTML += `</tbody></table>`;
     dom.listRequisicoesEmitidas.innerHTML = tableHTML;

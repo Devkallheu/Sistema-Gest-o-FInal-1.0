@@ -7,21 +7,25 @@ import * as auth from './auth.js';
 import * as ui from './ui.js';
 import { supabaseClient } from './supabaseClient.js';
 
+// Em main.js, substitua a função handleStep1 por esta:
 function handleStep1() {
-    const pregaoId = dom.pregaoInput.value.trim();
-    const pregaoRegex = /^\d{5}\/\d{4}$/;
-    if (!pregaoRegex.test(pregaoId)) {
-        dom.errorStep1.textContent = 'Formato inválido. Use NNNNN/AAAA.';
+    const pregaoId = dom.pregaoInput.value;
+
+    // Validação simplificada para garantir que uma opção foi selecionada
+    if (!pregaoId) {
+        dom.errorStep1.textContent = 'Por favor, selecione um pregão da lista.';
         dom.errorStep1.classList.remove('hidden');
         return;
     }
+
     const db = state.getDB();
     if (db[pregaoId]) {
         state.updateCurrentState({ pregaoId: pregaoId, pregaoData: db[pregaoId] });
         ui.renderFornecedores();
         ui.navigateToStep(2);
     } else {
-        dom.errorStep1.textContent = 'Pregão não encontrado.';
+        // Este erro não deve acontecer em condições normais, mas é bom mantê-lo
+        dom.errorStep1.textContent = 'Erro: Pregão selecionado não foi encontrado no banco de dados.';
         dom.errorStep1.classList.remove('hidden');
     }
 }
@@ -192,6 +196,10 @@ function setupEventListeners() {
             element.addEventListener(event, handler);
         }
     };
+    addListener(dom.fornecedorSearchInput, 'input', (e) => {
+    const searchTerm = e.target.value;
+    ui.renderFornecedores(searchTerm);
+});
 
     addListener(dom.loginForm, 'submit', auth.handleLogin);
     addListener(dom.logoutButton, 'click', auth.handleLogout);

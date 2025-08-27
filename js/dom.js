@@ -1,11 +1,12 @@
-// js/dom.js - VERSÃO FINAL CORRIGIDA
+// js/dom.js - VERSÃO COM A BUSCA DE FORNECEDOR
 
 // 1. Exportamos as variáveis vazias (let) para que possam ser preenchidas depois.
 export let loginView, appContainer, loginForm, loginError, welcomeMessage, logoutButton,
            homeButton, viewRequisicao, viewGerenciar, viewEmitidas, viewConfiguracoes, viewBackup,
            tabRequisicao, tabGerenciar, tabEmitidas, tabConfiguracoes, tabBackup, steps,
            pregaoInput, btnStep1, errorStep1, pregaoInfo, fornecedoresList, btnStep2, errorStep2,
-           fornecedorInfo, itemsTableBody, btnStep3, errorStep3, totalValueEl, setorInput,
+           fornecedorInfo, fornecedorSearchInput, // <-- ADICIONADO PARA A BUSCA
+           itemsTableBody, btnStep3, errorStep3, totalValueEl, setorInput,
            nupInput, responsavelInput, identidadeInput, destinoInput, contatoInput, emailInput,
            anexosInput, justificativaInput, notaCreditoInput, planoInternoInput, ptresInput,
            fiscalAdmInput, fiscalAdmFuncInput, conformadorInput, conformadorFuncInput,
@@ -15,7 +16,6 @@ export let loginView, appContainer, loginForm, loginError, welcomeMessage, logou
            errorAdminPregao, listRequisicoesEmitidas, formConfiguracoes, configSaveSuccess,
            userManagementSection, usersList, formAddUser, addUserError,
            defaultFiscalAdmInput, defaultFiscalAdmFuncInput, defaultConformadorInput,
-
            defaultConformadorFuncInput, defaultOrdenadorInput, defaultOrdenadorFuncInput,
            btnCreateBackup, backupFileInput, btnRestoreBackup, restoreStatus, editModal,
            editModalTitle, formEditPregao, editPregaoId, editPregaoNumero,
@@ -49,6 +49,7 @@ export function initializeDomElements() {
     btnStep2 = document.getElementById('btnStep2');
     errorStep2 = document.getElementById('errorStep2');
     fornecedorInfo = document.getElementById('fornecedorInfo');
+    fornecedorSearchInput = document.getElementById('fornecedorSearchInput'); // <-- ADICIONADO PARA A BUSCA
     itemsTableBody = document.getElementById('itemsTableBody');
     btnStep3 = document.getElementById('btnStep3');
     errorStep3 = document.getElementById('errorStep3');

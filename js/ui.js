@@ -113,21 +113,43 @@ export function startNewRequisition() {
     });
 
     navigateToStep(1);
+    populatePregoesDropdown();
 }
 
-export function renderFornecedores() {
+// Em ui.js, substitua a função renderFornecedores inteira por esta:
+
+export function renderFornecedores(searchTerm = '') {
     dom.fornecedoresList.innerHTML = '';
     dom.errorStep2.classList.add('hidden');
     dom.btnStep2.disabled = true;
+
     const currentState = state.getCurrentState();
     const pregao = currentState.pregaoData;
     dom.pregaoInfo.textContent = `Pregão ${currentState.pregaoId}: ${pregao.objeto}`;
-    pregao.fornecedores.forEach(fornecedor => {
-        const div = document.createElement('div');
-        div.className = 'p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition';
-        div.innerHTML = `<label class="flex items-center space-x-3"><input type="radio" name="fornecedor" value="${fornecedor.id}" class="form-radio h-5 w-5 text-blue-600"><div><p class="font-semibold text-gray-800">${fornecedor.nome}</p><p class="text-sm text-gray-500">CNPJ: ${fornecedor.cnpj}</p></div></label>`;
-        dom.fornecedoresList.appendChild(div);
+
+    const lowerCaseSearchTerm = searchTerm.trim().toLowerCase();
+
+    // Filtra a lista de fornecedores com base no termo de busca
+    const fornecedoresFiltrados = pregao.fornecedores.filter(fornecedor => {
+        const nome = fornecedor.nome.toLowerCase();
+        // Limpa o CNPJ para buscar apenas por números
+        const cnpj = fornecedor.cnpj.replace(/[^\d]/g, ''); 
+        const termoBuscaLimpo = lowerCaseSearchTerm.replace(/[^\d]/g, '');
+
+        // Retorna verdadeiro se o nome OU o CNPJ incluírem o termo buscado
+        return nome.includes(lowerCaseSearchTerm) || (termoBuscaLimpo && cnpj.includes(termoBuscaLimpo));
     });
+
+    if (fornecedoresFiltrados.length === 0) {
+        dom.fornecedoresList.innerHTML = '<p class="text-gray-500 text-center">Nenhum fornecedor encontrado.</p>';
+    } else {
+        fornecedoresFiltrados.forEach(fornecedor => {
+            const div = document.createElement('div');
+            div.className = 'p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition';
+            div.innerHTML = `<label class="flex items-center space-x-3"><input type="radio" name="fornecedor" value="${fornecedor.id}" class="form-radio h-5 w-5 text-blue-600"><div><p class="font-semibold text-gray-800">${fornecedor.nome}</p><p class="text-sm text-gray-500">CNPJ: ${fornecedor.cnpj}</p></div></label>`;
+            dom.fornecedoresList.appendChild(div);
+        });
+    }
 }
 
 export function renderItens() {
@@ -234,30 +256,52 @@ export async function saveRequisition() {
     return { data, error };
 }
 
+// Em ui.js, substitua a função inteira por esta:
+
 export async function renderRequisicoesEmitidas() {
     const loggedInUser = state.getLoggedInUser();
     dom.listRequisicoesEmitidas.innerHTML = '<div class="flex justify-center items-center p-4"><div class="loader"></div></div>';
+    
     const requisicoesSalvas = await api.getSavedRequisitions();
-    let reqsToShow = (loggedInUser.role !== 'admin' && loggedInUser.id) ? requisicoesSalvas.filter(req => req.criado_por_id === loggedInUser.id) : requisicoesSalvas;
+    
+    // 1. A lógica para decidir QUAIS requisições mostrar continua a mesma:
+    const isAdmin = loggedInUser.role === 'admin';
+    let reqsToShow = isAdmin ? requisicoesSalvas : requisicoesSalvas.filter(req => req.criado_por_id === loggedInUser.id);
+
     if (reqsToShow.length === 0) {
         dom.listRequisicoesEmitidas.innerHTML = `<p class="text-gray-500">Nenhuma requisição foi emitida.</p>`;
         return;
     }
+
     let tableHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nº Req.</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Setor</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">`;
+    
     reqsToShow.forEach(req => {
         const reqData = req.dados_completos;
-        tableHTML += `<tr><td class="px-4 py-4 text-sm font-bold text-gray-800">${String(reqData.numero).padStart(4, '0')}</td><td class="px-4 py-4 text-sm text-gray-600">${new Date(reqData.data).toLocaleDateString('pt-BR')}</td><td class="px-4 py-4 text-sm text-gray-600">${reqData.setorRequisitante}</td><td class="px-4 py-4 text-sm font-semibold text-gray-800">R$ ${reqData.valorTotal.toFixed(2).replace('.', ',')}</td><td class="px-4 py-4 text-sm">
-  <button class="download-historic-pdf text-blue-600 hover:text-blue-800"
-          data-requisition-id="${req.id}">
-    Baixar PDF
-  </button>
-  <button class="delete-requisition text-red-500 hover:text-red-700 ml-4 font-semibold"
-          data-requisition-id="${req.id}">
-    Excluir
-  </button>
-</td>
-</tr>`;
+        
+        // 2. NOVA LÓGICA: Decide se o botão "Excluir" deve aparecer
+        const canDelete = isAdmin || loggedInUser.id === req.criado_por_id;
+
+        tableHTML += `<tr>
+            <td class="px-4 py-4 text-sm font-bold text-gray-800">${String(reqData.numero).padStart(4, '0')}</td>
+            <td class="px-4 py-4 text-sm text-gray-600">${new Date(reqData.data).toLocaleDateString('pt-BR')}</td>
+            <td class="px-4 py-4 text-sm text-gray-600">${reqData.setorRequisitante}</td>
+            <td class="px-4 py-4 text-sm font-semibold text-gray-800">R$ ${reqData.valorTotal.toFixed(2).replace('.', ',')}</td>
+            <td class="px-4 py-4 text-sm">
+                <button class="download-historic-pdf text-blue-600 hover:text-blue-800" 
+                        data-requisition-id="${req.id}">
+                  Baixar PDF
+                </button>
+                ${canDelete ? // Se 'canDelete' for verdadeiro, mostra o botão Excluir
+                  `<button class="delete-requisition text-red-500 hover:text-red-700 ml-4 font-semibold" 
+                           data-requisition-id="${req.id}">
+                     Excluir
+                   </button>` 
+                  : '' // Se não, não mostra nada
+                }
+            </td>
+        </tr>`;
     });
+    
     tableHTML += `</tbody></table>`;
     dom.listRequisicoesEmitidas.innerHTML = tableHTML;
 }
@@ -385,4 +429,38 @@ export async function renderUserManagementView() {
     });
     tableHTML += `</tbody></table>`;
     usersListContainer.innerHTML = tableHTML;
+}
+
+// Em ui.js, substitua a função inteira por esta versão corrigida
+
+export function populatePregoesDropdown() {
+    const selectEl = dom.pregaoInput;
+    const database = state.getDB();
+    const pregoesIds = Object.keys(database);
+
+    // =================================================================
+    // ========= ALTERAÇÃO ADICIONADA AQUI PARA ORDENAR A LISTA =========
+    // =================================================================
+    pregoesIds.sort();
+    // =================================================================
+
+    // Limpa opções antigas
+    selectEl.innerHTML = '';
+
+    // Adiciona a primeira opção padrão
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Selecione um pregão...';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    selectEl.appendChild(defaultOption);
+
+    // Adiciona cada pregão como uma nova opção (agora de forma ordenada)
+    pregoesIds.forEach(pregaoNumero => {
+        const pregaoData = database[pregaoNumero];
+        const option = document.createElement('option');
+        option.value = pregaoNumero;
+        option.textContent = `${pregaoNumero} - ${pregaoData.objeto}`;
+        selectEl.appendChild(option);
+    });
 }

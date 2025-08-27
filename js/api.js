@@ -338,3 +338,11 @@ export async function getLatestRequisitionNumber() {
     }
     return 0;
 }
+// Adicione este bloco no final do arquivo api.js
+
+// ================= USUÁRIOS =================
+export async function listUsers() {
+    console.warn("Função api.listUsers não implementada completamente. Retornando lista vazia para evitar erros.");
+    // A lógica real e segura para listar usuários deve ser feita em uma Edge Function.
+    return { data: [], error: null };
+}

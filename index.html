@@ -63,20 +63,33 @@
                     <p class="text-gray-600 mb-6">Digite o número do pregão no formato NNNNN/AAAA.</p>
                     <div class="flex flex-col sm:flex-row items-end gap-4">
                         <div class="w-full">
-                            <label for="pregaoInput" class="block text-sm font-medium text-gray-700 mb-1">Número do Pregão</label>
-                            <input type="text" id="pregaoInput" placeholder="Ex: 90001/2025" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                           <label for="pregaoInput" class="block text-sm font-medium text-gray-700 mb-1">Selecione o Pregão</label>
+<select id="pregaoInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white">
+    </select>
                         </div>
                         <button id="btnStep1" class="w-full sm:w-auto bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">Avançar</button>
                     </div>
                     <div id="errorStep1" class="text-red-600 mt-2 text-sm font-medium hidden"></div>
                 </div>
+                
                 <div id="step2" class="hidden fade-in">
-                    <div class="flex justify-between items-start mb-6"><h2 class="text-xl font-semibold mb-1">Passo 2: Selecionar o Fornecedor</h2><button id="backToStep1" class="text-sm text-blue-600 hover:underline">Voltar</button></div>
-                    <p id="pregaoInfo" class="text-gray-600 mb-6"></p>
+                    <div class="flex justify-between items-start mb-6">
+                        <h2 class="text-xl font-semibold mb-1">Passo 2: Selecionar o Fornecedor</h2>
+                        <button id="backToStep1" class="text-sm text-blue-600 hover:underline">Voltar</button>
+                    </div>
+                    <p id="pregaoInfo" class="text-gray-600 mb-4"></p>
+
+                    <div class="mb-4">
+                        <input type="search" id="fornecedorSearchInput" placeholder="Buscar por nome ou CNPJ..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+
                     <div id="fornecedoresList" class="space-y-3"></div>
                     <div id="errorStep2" class="text-red-600 mt-4 text-sm font-medium hidden"></div>
-                    <div class="mt-6 flex justify-end"><button id="btnStep2" class="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm disabled:bg-gray-400" disabled>Avançar</button></div>
+                    <div class="mt-6 flex justify-end">
+                        <button id="btnStep2" class="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm disabled:bg-gray-400" disabled>Avançar</button>
+                    </div>
                 </div>
+                
                 <div id="step3" class="hidden fade-in">
                     <div class="flex justify-between items-start mb-6"><h2 class="text-xl font-semibold mb-1">Passo 3: Detalhes da Requisição e Itens</h2><button id="backToStep2" class="text-sm text-blue-600 hover:underline">Voltar</button></div>
                     <p id="fornecedorInfo" class="text-gray-600 mb-4"></p>
@@ -331,35 +344,89 @@
 
     </div>
 <script type="module" src="./js/main.js"></script>
-    <footer class="text-center py-4 text-gray-500 text-sm">
-        Criado e desenvolvido por: 3°Sgt Int Eugênio
-    </footer>
+    <footer class="text-center py-4 text-gray-500 text-sm">
+        Criado e desenvolvido por: 3°Sgt Int Eugênio
+    </footer>
 <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-    
-    <main class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg m-4">
-        
-        <h2 id="editModalTitle" class="text-2xl font-bold text-gray-700 mb-6">Editar Pregão</h2>
-        
-        <form id="formEditPregao" class="space-y-6">
+    
+    <main class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg m-4">
+        
+        <h2 id="editModalTitle" class="text-2xl font-bold text-gray-700 mb-6">Editar Pregão</h2>
+        
+        <form id="formEditPregao" class="space-y-6">
 
-            <input type="hidden" id="editPregaoId">
+            <input type="hidden" id="editPregaoId">
 
-            <div>
-                <label for="editPregaoNumero" class="block text-sm font-medium text-gray-700">Número do Pregão</label>
-                <input type="text" id="editPregaoNumero" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+            <div>
+                <label for="editPregaoNumero" class="block text-sm font-medium text-gray-700">Número do Pregão</label>
+                <input type="text" id="editPregaoNumero" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label for="editPregaoObjeto" class="block text-sm font-medium text-gray-700">Objeto do Pregão</label>
+                <input type="text" id="editPregaoObjeto" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+            </div>
+            
+            <div class="flex justify-end gap-4 pt-4">
+                <button type="button" id="btnCancelEdit" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
+                <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition">Salvar Alterações</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<div id="editRequisitionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+    <main class="w-full max-w-3xl bg-white p-8 rounded-xl shadow-lg m-4">
+        <h2 class="text-2xl font-bold text-gray-700 mb-6">Editar Requisição</h2>
+        
+        <form id="formEditRequisition" class="space-y-6 max-h-[70vh] overflow-y-auto pr-4">
+            <input type="hidden" id="editRequisitionId">
+            
+            <div class="bg-gray-50 p-4 rounded-lg border">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações da Capa</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="editNupInput" class="block text-sm font-medium text-gray-700">NUP</label>
+                        <input type="text" id="editNupInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="editSetorInput" class="block text-sm font-medium text-gray-700">Setor Requisitante</label>
+                        <input type="text" id="editSetorInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    </div>
             </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg border">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Justificativa e Dados Orçamentários</h3>
+                <div>
+                    <label for="editJustificativaInput" class="block text-sm font-medium text-gray-700">Justificativa da Necessidade</label>
+                    <textarea id="editJustificativaInput" rows="6" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                </div>
+                </div>
+
             <div>
-                <label for="editPregaoObjeto" class="block text-sm font-medium text-gray-700">Objeto do Pregão</label>
-                <input type="text" id="editPregaoObjeto" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-4">Itens a Solicitar</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo Atual</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qtd. a Solicitar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="editItemsTableBody" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                    </table>
+                </div>
             </div>
             
             <div class="flex justify-end gap-4 pt-4">
-                <button type="button" id="btnCancelEdit" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
-                <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition">Salvar Alterações</button>
+                <button type="button" id="btnCancelEditRequisition" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
+                <button type="submit" class="bg-green-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-700 transition">Salvar Alterações</button>
             </div>
         </form>
     </main>
 </div>
 
 </body>
-</html>
+</html>qual o código que devo usar então no ui.js e no main.js?

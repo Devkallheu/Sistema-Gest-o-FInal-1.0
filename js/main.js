@@ -43,6 +43,8 @@ function handleStep2() {
     }
 }
 
+// js/main.js
+
 function handleStep3() {
     const currentStateUpdates = {
         setorRequisitante: dom.setorInput.value.trim(),
@@ -63,7 +65,9 @@ function handleStep3() {
         conformador: dom.conformadorInput.value.trim(),
         conformadorFunc: dom.conformadorFuncInput.value.trim(),
         ordenador: dom.ordenadorInput.value.trim(),
-        ordenadorFunc: dom.ordenadorFuncInput.value.trim()
+        ordenadorFunc: dom.ordenadorFuncInput.value.trim(),
+        // LINHA ESSENCIAL ADICIONADA AQUI:
+        valorTotal: parseFloat(dom.totalValueEl.textContent.replace('R$ ', '').replace('.', '').replace(',', '.'))
     };
     state.updateCurrentState(currentStateUpdates);
     if (!currentStateUpdates.setorRequisitante) {
@@ -73,7 +77,6 @@ function handleStep3() {
     ui.renderPreview();
     ui.navigateToStep(4);
 }
-
 async function handleSaveConfig(e) {
     e.preventDefault();
     const settingsObject = {

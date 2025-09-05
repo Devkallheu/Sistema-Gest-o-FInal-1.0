@@ -43,6 +43,8 @@ function handleStep2() {
     }
 }
 
+// js/main.js
+
 function handleStep3() {
     const currentStateUpdates = {
         setorRequisitante: dom.setorInput.value.trim(),

@@ -418,17 +418,29 @@ export async function renderUserManagementView() {
         return;
     }
 
-    let tableHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Papel</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Último Login</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">`;
-    users.forEach(user => {
-        const userRole = user.user_metadata?.role || 'requisitante';
-        tableHTML += `<tr>
-            <td class="px-4 py-4 text-sm font-medium text-gray-800">${user.email}</td>
-            <td class="px-4 py-4 text-sm"><select class="user-role-select border rounded-md p-1 bg-white" data-user-id="${user.id}"><option value="requisitante" ${userRole === 'requisitante' ? 'selected' : ''}>Requisitante</option><option value="admin" ${userRole === 'admin' ? 'selected' : ''}>Admin</option></select></td>
-            <td class="px-4 py-4 text-sm text-gray-600">${user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString('pt-BR') : 'Nunca'}</td>
-        </tr>`;
-    });
-    tableHTML += `</tbody></table>`;
-    usersListContainer.innerHTML = tableHTML;
+ let tableHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Papel</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Último Login</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">`;
+users.forEach(user => {
+    const userRole = user.user_metadata?.role || 'requisitante';
+    const loggedInUser = state.getLoggedInUser();
+
+    tableHTML += `<tr>
+        <td class="px-4 py-4 text-sm font-medium text-gray-800">${user.email}</td>
+        <td class="px-4 py-4 text-sm">${userRole}</td>
+        <td class="px-4 py-4 text-sm text-gray-600">${user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString('pt-BR') : 'Nunca'}</td>
+        <td class="px-4 py-4 text-sm">
+            ${user.id !== loggedInUser.id ? // Só mostra o botão se não for o próprio usuário
+              `<button class="delete-user-btn text-red-500 hover:text-red-700 font-semibold" 
+                       data-user-id="${user.id}"
+                       data-user-email="${user.email}">
+                 Excluir
+               </button>` 
+              : '<span class="text-xs text-gray-400">Usuário Atual</span>'
+            }
+        </td>
+    </tr>`;
+});
+tableHTML += `</tbody></table>`;
+usersListContainer.innerHTML = tableHTML;
 }
 
 // Em ui.js, substitua a função inteira por esta versão corrigida

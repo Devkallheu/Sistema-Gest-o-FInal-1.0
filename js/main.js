@@ -128,7 +128,7 @@ if (error) {
         const { error } = await api.addFornecedor(nome, cnpj, pregaoId);
       
         if (error) { notify.showError('Falha ao adicionar', 'Erro: ' + error.message); }
-        else { notify.showSuccess('Fornecedor adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }   
+        else { notify.showSuccess('Fornecedor adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }  
 
     } else if (form.classList.contains('formAddItem')) {
         const fornecedorId = form.dataset.fornecedorId;
@@ -204,11 +204,13 @@ function setupEventListeners() {
             element.addEventListener(event, handler);
         }
     };
+
     addListener(dom.fornecedorSearchInput, 'input', (e) => {
-    const searchTerm = e.target.value;
-    ui.renderFornecedores(searchTerm);
-});
-addListener(document, 'submit', async (e) => {
+        const searchTerm = e.target.value;
+        ui.renderFornecedores(searchTerm);
+    });
+
+    addListener(document, 'submit', async (e) => {
         if (e.target.id === 'formAddNewUser') {
             e.preventDefault();
             const form = e.target;
@@ -230,11 +232,36 @@ addListener(document, 'submit', async (e) => {
                 statusEl.className = 'text-sm mt-2 font-medium text-green-600';
                 form.reset();
                 // Atualiza a lista de usuários para mostrar o novo
-                ui.renderUserManagementView(); 
+                ui.renderUserManagementView();
             }
         }
     });
 
+    addListener(dom.userManagementSection, 'click', async (e) => {
+        // Verifica se o alvo do clique foi um botão de excluir usuário
+        if (e.target.classList.contains('delete-user-btn')) {
+            const userId = e.target.dataset.userId;
+            const userEmail = e.target.dataset.userEmail;
+
+            // Pede confirmação
+            const result = await notify.showConfirm(
+                `Excluir ${userEmail}?`,
+                'Esta ação é permanente e não pode ser desfeita.'
+            );
+
+            if (result.isConfirmed) {
+                const { error } = await api.deleteUser(userId);
+
+                if (error) {
+                    notify.showError('Erro ao excluir', error.message);
+                } else {
+                    notify.showSuccess('Usuário excluído com sucesso!');
+                    // Atualiza a lista para remover o usuário da tela
+                    ui.renderUserManagementView();
+                }
+            }
+        }
+    });
 
     addListener(dom.loginForm, 'submit', auth.handleLogin);
     addListener(dom.logoutButton, 'click', auth.handleLogout);
@@ -307,33 +334,33 @@ addListener(document, 'submit', async (e) => {
             if (reqData) { ui.handleDownloadHistoricPdf(reqData.dados_completos); }
             else { notify.showError('Erro', 'Não foi possível encontrar os dados da requisição.'); }
         } else if (target.classList.contains('delete-requisition')) {
-    const requisitionId = target.dataset.requisitionId;
-    const result = await notify.showConfirm('Excluir Requisição?', 'O saldo dos itens será restaurado.');
-if (result.isConfirmed) {
-        // 1. Ativa o nosso novo estado de carregamento
-        ui.showButtonLoading(target, 'Excluindo...');
+            const requisitionId = target.dataset.requisitionId;
+            const result = await notify.showConfirm('Excluir Requisição?', 'O saldo dos itens será restaurado.');
+            if (result.isConfirmed) {
+                // 1. Ativa o nosso novo estado de carregamento
+                ui.showButtonLoading(target, 'Excluindo...');
 
-        try {
-            const sucesso = await api.deleteRequisition(requisitionId);
-            
-            if (sucesso) {
-                alert('Requisição excluída e saldos restaurados com sucesso!');
-                const databaseAtualizado = await api.loadInitialData();
-                state.setDatabase(databaseAtualizado);
-                ui.renderRequisicoesEmitidas(); // A lista será redesenhada, então não precisamos restaurar o botão
-            } else {
-                alert('Falha ao excluir a requisição.');
-                // 2. Restaura o botão em caso de falha
-                ui.hideButtonLoading(target); 
+                try {
+                    const sucesso = await api.deleteRequisition(requisitionId);
+
+                    if (sucesso) {
+                        alert('Requisição excluída e saldos restaurados com sucesso!');
+                        const databaseAtualizado = await api.loadInitialData();
+                        state.setDatabase(databaseAtualizado);
+                        ui.renderRequisicoesEmitidas(); // A lista será redesenhada, então não precisamos restaurar o botão
+                    } else {
+                        alert('Falha ao excluir a requisição.');
+                        // 2. Restaura o botão em caso de falha
+                        ui.hideButtonLoading(target);
+                    }
+                } catch (error) {
+                    console.error("Erro ao excluir requisição:", error);
+                    alert('Ocorreu um erro inesperado ao excluir a requisição.');
+                    // 3. Garante que o botão seja restaurado mesmo em caso de erro inesperado
+                    ui.hideButtonLoading(target);
+                }
             }
-        } catch (error) {
-            console.error("Erro ao excluir requisição:", error);
-            alert('Ocorreu um erro inesperado ao excluir a requisição.');
-            // 3. Garante que o botão seja restaurado mesmo em caso de erro inesperado
-            ui.hideButtonLoading(target);
         }
-    }
-}
     });
     addListener(dom.adminPregoesContainer, 'submit', handleAdminFormSubmit);
     addListener(dom.adminPregoesContainer, 'click', handleAdminClick);

@@ -372,3 +372,27 @@ export async function createNewUser(email, password, role) {
         return { data: null, error: err };
     }
 }
+// js/api.js - NOVA VERSÃO DE DEPURAÇÃO DA FUNÇÃO deleteUser
+
+export async function deleteUser(userId) {
+    try {
+        const { data, error } = await supabaseClient.functions.invoke('delete-user', {
+            body: { user_id: userId },
+        });
+
+        if (error) throw error;
+        
+        return { data, error: null };
+    } catch (err) {
+        // --- NOVAS LINHAS DE DEPURAÇÃO ADICIONADAS AQUI ---
+        console.log('Chaves do objeto de erro:', Object.keys(err));
+        console.log('Objeto de erro completo (como texto):', JSON.stringify(err, null, 2));
+        // ----------------------------------------------------
+
+        console.error("Erro detalhado ao invocar a função delete-user:", err);
+        
+        const specificMessage = err.context?.json?.error || err.message;
+
+        return { data: null, error: { message: specificMessage } };
+    }
+}

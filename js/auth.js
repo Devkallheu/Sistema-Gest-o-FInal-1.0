@@ -1,3 +1,4 @@
+import * as notify from './notifications.js';
 import * as dom from './dom.js';
 import * as state from './state.js';
 import { setupUIForUser } from './ui.js';
@@ -31,10 +32,10 @@ export async function handleLogin(event) {
 export async function handleLogout() {
     const { error } = await supabaseClient.auth.signOut();
     if (error) {
-        console.error('Erro no logout:', error);
-        alert('Não foi possível fazer o logout.');
-        return;
-    }
+    console.error('Erro no logout:', error);
+    notify.showError('Erro', 'Não foi possível fazer o logout.');
+    return;
+}
     state.setLoggedInUser(null);
     location.reload();
 }

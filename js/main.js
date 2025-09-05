@@ -1,5 +1,5 @@
 // js/main.js - VERSÃO FINAL COMPLETA E CORRIGIDA
-
+import * as notify from './notifications.js';
 import * as dom from './dom.js';
 import * as state from './state.js';
 import * as api from './api.js';
@@ -63,17 +63,18 @@ function handleStep3() {
         conformador: dom.conformadorInput.value.trim(),
         conformadorFunc: dom.conformadorFuncInput.value.trim(),
         ordenador: dom.ordenadorInput.value.trim(),
-        ordenadorFunc: dom.ordenadorFuncInput.value.trim()
+        ordenadorFunc: dom.ordenadorFuncInput.value.trim(),
+        // LINHA ESSENCIAL ADICIONADA AQUI:
+        valorTotal: parseFloat(dom.totalValueEl.textContent.replace('R$ ', '').replace('.', '').replace(',', '.'))
     };
     state.updateCurrentState(currentStateUpdates);
-    if (!currentStateUpdates.setorRequisitante) {
-        alert('O campo "Setor Requisitante" é obrigatório.');
-        return;
-    }
+   if (!currentStateUpdates.setorRequisitante) {
+    notify.showError('Campo Obrigatório', 'Por favor, preencha o "Setor Requisitante".');
+    return;
+}
     ui.renderPreview();
     ui.navigateToStep(4);
 }
-
 async function handleSaveConfig(e) {
     e.preventDefault();
     const settingsObject = {
@@ -89,8 +90,8 @@ async function handleSaveConfig(e) {
         dom.configSaveSuccess.classList.remove('hidden');
         setTimeout(() => { dom.configSaveSuccess.classList.add('hidden') }, 3000);
     } else {
-        alert('Falha ao salvar as configurações.');
-    }
+    notify.showError('Oops...', 'Falha ao salvar as configurações.');
+}
 }
 
 async function handleAdminFormSubmit(e) {
@@ -99,31 +100,34 @@ async function handleAdminFormSubmit(e) {
     if (form.id === 'formAddPregao') {
         const numeroPregao = document.getElementById('adminPregaoId').value.trim();
         const objeto = document.getElementById('adminPregaoObjeto').value.trim();
-        if (!numeroPregao || !objeto) return alert('Por favor, preencha todos os campos do pregão.');
+        if (!numeroPregao || !objeto) return notify.showError('Por favor, preencha todos os campos do pregão.');
         const { error } = await api.addPregao(numeroPregao, objeto);
        // CÓDIGO NOVO em main.js
 if (error) {
     // Verifica se a mensagem de erro é sobre chave duplicada
-    if (error.message.includes('duplicate key value violates unique constraint')) {
-        alert('Esse pregão já está cadastrado, por favor, confirme o número correto da contratação e tente novamente.');
-    } else {
-        // Para qualquer outro erro, mostra a mensagem técnica
-        alert('Falha ao adicionar o pregão. Erro: ' + error.message);
-    }
+   if (error.message.includes('duplicate key value violates unique constraint')) {
+    notify.showError('Pregão Duplicado', 'Esse pregão já está cadastrado, por favor, confirme o número.');
 } else {
-    alert('Pregão adicionado com sucesso!');
+    notify.showError('Falha ao adicionar', 'Erro: ' + error.message);
+}
+// ...
+// ...
+} else {
+    notify.showSuccess('Pregão adicionado com sucesso!'); // <-- LINHA NOVA
     form.reset();
     ui.renderAdminView();
 }
-
+// ...
     } else if (form.classList.contains('formAddFornecedor')) {
         const nome = form.elements.nome.value.trim();
         const cnpj = form.elements.cnpj.value.trim();
         const pregaoId = form.dataset.pregaoId;
         if (!nome || !cnpj) return alert('Por favor, preencha todos os campos do fornecedor.');
         const { error } = await api.addFornecedor(nome, cnpj, pregaoId);
-        if (error) { alert('Falha ao adicionar o fornecedor. Erro: ' + error.message); }
-        else { alert('Fornecedor adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }
+      
+        if (error) { notify.showError('Falha ao adicionar', 'Erro: ' + error.message); }
+        else { notify.showSuccess('Fornecedor adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }   
+
     } else if (form.classList.contains('formAddItem')) {
         const fornecedorId = form.dataset.fornecedorId;
         const itemData = {
@@ -135,12 +139,13 @@ if (error) {
             quantidade_max: parseInt(form.elements.quantidadeMax.value, 10),
             valor: parseFloat(form.elements.valor.value)
         };
-        if (!itemData.descricao || isNaN(itemData.quantidade_max) || isNaN(itemData.valor)) {
-            return alert('Descrição, Quantidade e Valor são obrigatórios.');
-        }
-        const { error } = await api.addItem(itemData);
-        if (error) { alert('Falha ao adicionar o item. Erro: ' + error.message); }
-        else { alert('Item adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }
+        // ... outros `else if` ...
+if (!itemData.descricao || isNaN(itemData.quantidade_max) || isNaN(itemData.valor)) {
+    return notify.showError('Campos Obrigatórios', 'Descrição, Quantidade e Valor são obrigatórios.');
+}
+// ...
+if (error) { notify.showError('Falha ao adicionar', 'Erro: ' + error.message); }
+else { notify.showSuccess('Item adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }
     }
 }
 
@@ -158,18 +163,21 @@ async function handleAdminClick(e) {
         }
     } else if (target.classList.contains('delete-fornecedor')) {
         const fornecedorId = target.dataset.fornecedorId;
-        if (confirm('Tem certeza que deseja excluir este fornecedor?')) {
-            const sucesso = await api.deleteFornecedor(fornecedorId);
-            if (sucesso) { alert('Fornecedor excluído!'); ui.renderAdminView(); }
-            else { alert('Falha ao excluir o fornecedor.'); }
-        }
+        const result = await notify.showConfirm('Excluir Fornecedor?', 'A ação não poderá ser revertida.');
+if (result.isConfirmed) {
+    const sucesso = await api.deleteFornecedor(fornecedorId);
+    if (sucesso) { notify.showSuccess('Fornecedor excluído!'); ui.renderAdminView(); }
+    else { notify.showError('Oops...', 'Falha ao excluir o fornecedor.'); }
+}
+        
     } else if (target.classList.contains('delete-item')) {
         const itemId = target.dataset.itemId;
-        if (confirm('Tem certeza que deseja excluir este item?')) {
-            const sucesso = await api.deleteItem(itemId);
-            if (sucesso) { alert('Item excluído!'); ui.renderAdminView(); }
-            else { alert('Falha ao excluir o item.'); }
-        }
+        const result = await notify.showConfirm('Excluir Item?', 'A ação não poderá ser revertida.');
+if (result.isConfirmed) {
+    const sucesso = await api.deleteItem(itemId);
+    if (sucesso) { notify.showSuccess('Item excluído!'); ui.renderAdminView(); }
+    else { notify.showError('Oops...', 'Falha ao excluir o item.'); }
+}
     }
 }
 
@@ -182,11 +190,9 @@ async function handleEditPregaoSubmit(e) {
     };
     const sucesso = await api.updatePregao(pregaoId, updatedData);
     if (sucesso) {
-        alert('Pregão atualizado com sucesso!');
-        ui.closeEditModal();
-        await ui.renderAdminView();
+    notify.showSuccess('Pregão atualizado com sucesso!');
     } else {
-        alert('Falha ao atualizar o pregão.');
+    notify.showError('Oops...', 'Falha ao atualizar o pregão.');
     }
 }
 
@@ -200,6 +206,33 @@ function setupEventListeners() {
     const searchTerm = e.target.value;
     ui.renderFornecedores(searchTerm);
 });
+addListener(document, 'submit', async (e) => {
+        if (e.target.id === 'formAddNewUser') {
+            e.preventDefault();
+            const form = e.target;
+            const email = form.elements.newUserInputEmail.value;
+            const password = form.elements.newUserInputPassword.value;
+            const role = form.elements.newUserInputRole.value;
+            const statusEl = document.getElementById('addUserStatus');
+
+            statusEl.textContent = 'Adicionando...';
+            statusEl.className = 'text-sm mt-2 font-medium text-blue-600';
+
+            const { error } = await api.createNewUser(email, password, role);
+
+            if (error) {
+                statusEl.textContent = `Erro: ${error.message}`;
+                statusEl.className = 'text-sm mt-2 font-medium text-red-600';
+            } else {
+                statusEl.textContent = 'Usuário adicionado com sucesso!';
+                statusEl.className = 'text-sm mt-2 font-medium text-green-600';
+                form.reset();
+                // Atualiza a lista de usuários para mostrar o novo
+                ui.renderUserManagementView(); 
+            }
+        }
+    });
+
 
     addListener(dom.loginForm, 'submit', auth.handleLogin);
     addListener(dom.logoutButton, 'click', auth.handleLogout);
@@ -270,25 +303,35 @@ function setupEventListeners() {
             const requisicoes = await api.getSavedRequisitions();
             const reqData = requisicoes.find(r => r.id == requisitionId);
             if (reqData) { ui.handleDownloadHistoricPdf(reqData.dados_completos); }
-            else { alert('Não foi possível encontrar os dados da requisição.'); }
+            else { notify.showError('Erro', 'Não foi possível encontrar os dados da requisição.'); }
         } else if (target.classList.contains('delete-requisition')) {
-            const requisitionId = target.dataset.requisitionId;
-            if (confirm('Tem certeza que deseja excluir esta requisição? O saldo dos itens será restaurado.')) {
-                target.disabled = true;
-                target.textContent = "Excluindo...";
-                const sucesso = await api.deleteRequisition(requisitionId);
-                if (sucesso) {
-                    alert('Requisição excluída e saldos restaurados com sucesso!');
-                    const databaseAtualizado = await api.loadInitialData();
-                    state.setDatabase(databaseAtualizado);
-                    ui.renderRequisicoesEmitidas();
-                } else {
-                    alert('Falha ao excluir a requisição.');
-                    target.disabled = false;
-                    target.textContent = "Excluir";
-                }
+    const requisitionId = target.dataset.requisitionId;
+    const result = await notify.showConfirm('Excluir Requisição?', 'O saldo dos itens será restaurado.');
+if (result.isConfirmed) {
+        // 1. Ativa o nosso novo estado de carregamento
+        ui.showButtonLoading(target, 'Excluindo...');
+
+        try {
+            const sucesso = await api.deleteRequisition(requisitionId);
+            
+            if (sucesso) {
+                alert('Requisição excluída e saldos restaurados com sucesso!');
+                const databaseAtualizado = await api.loadInitialData();
+                state.setDatabase(databaseAtualizado);
+                ui.renderRequisicoesEmitidas(); // A lista será redesenhada, então não precisamos restaurar o botão
+            } else {
+                alert('Falha ao excluir a requisição.');
+                // 2. Restaura o botão em caso de falha
+                ui.hideButtonLoading(target); 
             }
+        } catch (error) {
+            console.error("Erro ao excluir requisição:", error);
+            alert('Ocorreu um erro inesperado ao excluir a requisição.');
+            // 3. Garante que o botão seja restaurado mesmo em caso de erro inesperado
+            ui.hideButtonLoading(target);
         }
+    }
+}
     });
     addListener(dom.adminPregoesContainer, 'submit', handleAdminFormSubmit);
     addListener(dom.adminPregoesContainer, 'click', handleAdminClick);

@@ -341,8 +341,34 @@ export async function getLatestRequisitionNumber() {
 // Adicione este bloco no final do arquivo api.js
 
 // ================= USUÁRIOS =================
+// js/api.js
+
 export async function listUsers() {
-    console.warn("Função api.listUsers não implementada completamente. Retornando lista vazia para evitar erros.");
-    // A lógica real e segura para listar usuários deve ser feita em uma Edge Function.
-    return { data: [], error: null };
+    try {
+        const { data, error } = await supabaseClient.functions.invoke('list-users');
+
+        if (error) throw error;
+
+        // A função retorna um objeto { users: [...] }, então pegamos o array de dentro
+        return { data: data.users, error: null };
+    } catch (err) {
+        console.error("Erro ao invocar a função list-users:", err);
+        return { data: [], error: err };
+    }
+}
+// Adicione no final do js/api.js
+
+export async function createNewUser(email, password, role) {
+    try {
+        const { data, error } = await supabaseClient.functions.invoke('create-user', {
+            body: { email, password, role },
+        });
+
+        if (error) throw error;
+
+        return { data, error: null };
+    } catch (err) {
+        console.error("Erro ao invocar a função create-user:", err);
+        return { data: null, error: err };
+    }
 }

@@ -1,5 +1,5 @@
 // js/ui.js - VERSÃO FINAL COM INICIALIZAÇÃO AUTOMÁTICA
-
+import * as notify from './notifications.js';
 import * as dom from './dom.js';
 import * as state from './state.js';
 import * as api from './api.js';
@@ -251,8 +251,8 @@ export async function saveRequisition() {
     }
     const { data, error } = await api.saveNewRequisition(requisicao);
     if (error) {
-        alert('ATENÇÃO: A requisição foi exibida como salva, mas ocorreu um erro ao comunicar com o servidor. Por favor, recarregue a página e verifique os dados. Erro: ' + error.message);
-    }
+    notify.showError('Erro de Sincronização', 'A requisição foi salva localmente, mas falhou ao enviar ao servidor. Verifique sua conexão e os dados. Erro: ' + error.message);
+}
     return { data, error };
 }
 
@@ -311,9 +311,9 @@ export function handleDownloadHistoricPdf(requisicaoCompleta) {
         try {
             generatePDF(requisicaoCompleta);
         } catch (error) {
-            console.error("Erro PDF:", error);
-            alert("Não foi possível gerar o PDF.");
-        }
+    console.error("Erro PDF:", error);
+    notify.showError('Erro ao Gerar PDF', 'Houve um problema ao tentar criar o documento.');
+}
     }
 }
 
@@ -377,8 +377,8 @@ export function openEditPregaoModal(pregaoId) {
         }
     }
     if (!pregaoData) {
-        alert('Erro: Pregão não encontrado para edição.');
-        return;
+    notify.showError('Erro', 'Pregão não encontrado para edição.');
+    return;
     }
     dom.editPregaoId.value = pregaoId;
     dom.editPregaoNumero.value = pregaoNumero;
@@ -463,4 +463,35 @@ export function populatePregoesDropdown() {
         option.textContent = `${pregaoNumero} - ${pregaoData.objeto}`;
         selectEl.appendChild(option);
     });
+}
+// Adicione no final do ficheiro ui.js
+
+/**
+ * Ativa o estado de carregamento de um botão.
+ * @param {HTMLButtonElement} button O elemento do botão a ser modificado.
+ * @param {string} loadingText O texto a ser exibido durante o carregamento (ex: "Salvando...").
+ */
+export function showButtonLoading(button, loadingText = 'Aguarde...') {
+  // Salva o conteúdo original do botão para poder restaurá-lo depois.
+  button.dataset.originalContent = button.innerHTML;
+  
+  // Desativa o botão.
+  button.disabled = true;
+  
+  // Define o novo conteúdo com o spinner e o texto de carregamento.
+  button.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
+}
+
+/**
+ * Restaura um botão ao seu estado original após o carregamento.
+ * @param {HTMLButtonElement} button O elemento do botão a ser restaurado.
+ */
+export function hideButtonLoading(button) {
+  // Verifica se havia conteúdo original salvo.
+  if (button.dataset.originalContent) {
+    button.innerHTML = button.dataset.originalContent;
+  }
+  
+  // Reativa o botão.
+  button.disabled = false;
 }

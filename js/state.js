@@ -37,7 +37,6 @@ export const setLoggedInUser = (user) => { state.loggedInUser = user; };
 export const setUsers = (newUsers) => { state.users = newUsers; };
 export const setDatabase = (newDatabase) => { state.database = newDatabase; };
 export const setConfiguracoes = (newConfig) => { state.configuracoes = newConfig; };
-export const incrementProximoNumeroRequisicao = () => { state.proximoNumeroRequisicao++; };
 export const addRequisicaoSalva = (requisicao) => { state.requisicoesSalvas.push(requisicao); };
 
 // A função updateItemQuantityInDB foi removida daqui.

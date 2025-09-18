@@ -320,26 +320,6 @@ export async function saveSettings(settingsObject) {
     }
     return true;
 }
-
-export async function getLatestRequisitionNumber() {
-    const { data, error } = await supabaseClient
-        .from('requisicoes')
-        .select('numero_requisicao')
-        .order('numero_requisicao', { ascending: false })
-        .limit(1);
-
-    if (error) { 
-        console.error("Erro ao buscar último número de requisição:", error); 
-        return 0; 
-    }
-
-    if (data && data.length > 0) { 
-        return data[0].numero_requisicao; 
-    }
-    return 0;
-}
-// Adicione este bloco no final do arquivo api.js
-
 // ================= USUÁRIOS =================
 // js/api.js
 

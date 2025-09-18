@@ -1,4 +1,3 @@
-// js/dom.js - VERSÃO COM A BUSCA DE FORNECEDOR
 
 // 1. Exportamos as variáveis vazias (let) para que possam ser preenchidas depois.
 export let loginView, appContainer, loginForm, loginError, welcomeMessage, logoutButton,
@@ -19,7 +18,7 @@ export let loginView, appContainer, loginForm, loginError, welcomeMessage, logou
            defaultConformadorFuncInput, defaultOrdenadorInput, defaultOrdenadorFuncInput,
            btnCreateBackup, backupFileInput, btnRestoreBackup, restoreStatus, editModal,
            editModalTitle, formEditPregao, editPregaoId, editPregaoNumero,
-           editPregaoObjeto, btnCancelEdit, previewJustificativa;
+           editPregaoObjeto, btnCancelEdit, previewJustificativa, numeroRequisicaoInput;
 
 // 2. Criamos uma função que será chamada APENAS quando o HTML estiver pronto.
 export function initializeDomElements() {
@@ -111,4 +110,5 @@ export function initializeDomElements() {
     editPregaoObjeto = document.getElementById('editPregaoObjeto');
     btnCancelEdit = document.getElementById('btnCancelEdit');
     previewJustificativa = document.getElementById('previewJustificativa');
+    numeroRequisicaoInput = document.getElementById('numeroRequisicaoInput');
 }

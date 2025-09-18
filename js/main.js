@@ -66,7 +66,7 @@ function handleStep3() {
         conformadorFunc: dom.conformadorFuncInput.value.trim(),
         ordenador: dom.ordenadorInput.value.trim(),
         ordenadorFunc: dom.ordenadorFuncInput.value.trim(),
-        // LINHA ESSENCIAL ADICIONADA AQUI:
+        numero: dom.numeroRequisicaoInput.value.trim(),
         valorTotal: parseFloat(dom.totalValueEl.textContent.replace('R$ ', '').replace('.', '').replace(',', '.'))
     };
     state.updateCurrentState(currentStateUpdates);
@@ -408,19 +408,17 @@ async function initializeApp() {
         username: session.user.email.split('@')[0]
     });
 
-    const [dbData, ultimoNumero, settingsData] = await Promise.all([
-        api.loadInitialData(),
-        api.getLatestRequisitionNumber(),
-        api.getSettings()
-    ]);
-    const proximoNumeroRequisicao = ultimoNumero + 1;
-    state.setInitialData({
-        database: dbData,
-        requisicoesSalvas: [],
-        proximoNumeroRequisicao: proximoNumeroRequisicao,
-        users: [],
-        configuracoes: settingsData
-    });
+    const [dbData, settingsData] = await Promise.all([
+    api.loadInitialData(),
+    api.getSettings()
+]);
+state.setInitialData({
+    database: dbData,
+    requisicoesSalvas: [],
+    proximoNumeroRequisicao: null, // Não é mais usado
+    users: [],
+    configuracoes: settingsData
+});
 
     dom.loginView.classList.add('hidden');
     dom.appContainer.classList.remove('hidden');

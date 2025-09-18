@@ -81,6 +81,7 @@ export function startNewRequisition() {
     const justificativaPadrao = `1.1. Nos termos do contido no Art. 13 da Port. Min N° 305, de 24 Mai 95 - Instruções Gerais para realização de Licitações no Comando do Exército (IG 12-02) solicito providências junto ao Ordenador de Despesas, no sentido de aprovar a requisição do material/serviço.\n1.2. A requisição está alinhada com Objetivo Estratégico Organizacional OE 05, Meta 5.2.1. Aprimorar a gestão de recursos no Cmdo Fron AC/ 4 BIS, Ação 5.2.1.2 do Plano de Gestão do Cmdo Fron AC/4 BIS no que diz respeito à provisão, manutenção e reversão dos meios e serviços necessários à execução das diversas funções. Deste modo, solicito que seja autorizado a aquisição do material de consumo especificado:`;
 
     dom.pregaoInput.value = '';
+    dom.numeroRequisicaoInput.value = '';
     dom.setorInput.value = '';
     dom.nupInput.value = '';
     dom.responsavelInput.value = '';
@@ -184,11 +185,14 @@ export function updateTotal() {
     dom.btnStep3.disabled = total <= 0;
 }
 
+// js/ui.js - SUBSTITUA SUA FUNÇÃO renderPreview PELA VERSÃO ABAIXO
+
 export function renderPreview() {
     const currentState = state.getCurrentState();
-    const numeroRequisicaoAtual = state.getProximoNumeroRequisicao();
-    state.updateCurrentState({ numeroRequisicaoAtual });
-    dom.previewNumRequisicao.textContent = String(numeroRequisicaoAtual).padStart(4, '0');
+
+    // A lógica antiga foi removida. Agora usamos o 'numero' que veio do formulário no Passo 3.
+    dom.previewNumRequisicao.textContent = currentState.numero;
+    
     dom.previewSetor.textContent = currentState.setorRequisitante;
     dom.previewPregao.textContent = currentState.pregaoId;
     dom.previewFornecedor.textContent = currentState.fornecedorData.nome;
@@ -200,9 +204,13 @@ export function renderPreview() {
     dom.btnSave.disabled = false;
 }
 
+// js/ui.js - SUBSTITUA SUA FUNÇÃO saveRequisition PELA VERSÃO ABAIXO
+
 export async function saveRequisition() {
     const currentState = state.getCurrentState();
     const loggedInUser = state.getLoggedInUser();
+    
+    // O objeto 'requisicao' agora busca o 'numero' do estado atual (que foi digitado no formulário)
     const requisicao = {
         pregaoId: currentState.pregaoId,
         fornecedorData: currentState.fornecedorData,
@@ -226,36 +234,31 @@ export async function saveRequisition() {
         conformadorFunc: currentState.conformadorFunc,
         ordenador: currentState.ordenador,
         ordenadorFunc: currentState.ordenadorFunc,
-        numero: state.getProximoNumeroRequisicao(),
+        
+        // --- CORREÇÕES APLICADAS AQUI ---
+        numero: currentState.numero, // Pega o número manual digitado no Passo 3
+        valorTotal: currentState.valorTotal, // Pega o valor total já calculado
+        // ----------------------------------
+
         data: new Date().toISOString(),
-        valorTotal: parseFloat(dom.totalValueEl.textContent.replace('R$ ', '').replace('.', ',')),
         createdBy: loggedInUser.username
     };
-    try {
-        const db = state.getDB();
-        for (const itemId in requisicao.selectedItems) {
-            const quantidadeRequisitada = requisicao.selectedItems[itemId];
-            const itemNoBanco = db[requisicao.pregaoId]?.fornecedores.find(f => f.id === requisicao.fornecedorData.id)?.itens.find(i => i.id === itemId);
-            if (itemNoBanco) {
-                itemNoBanco.quantidadeMax -= quantidadeRequisitada;
-            }
-        }
+    
+    const { data, error } = await api.saveNewRequisition(requisicao);
+
+    if (error) {
+        notify.showError('Erro de Sincronização', 'A requisição falhou ao ser salva. Os saldos NÃO foram alterados. Erro: ' + error.message);
+        dom.btnSave.disabled = false; // Reativa o botão em caso de erro
+    } else {
+        const db = await api.loadInitialData(); // Recarrega os dados para garantir consistência
         state.setDatabase(db);
-        state.incrementProximoNumeroRequisicao();
+        // Não incrementamos mais o número, pois é manual
         dom.saveSuccess.classList.remove('hidden');
         dom.finalActions.classList.add('hidden');
         dom.startNewAction.classList.remove('hidden');
-    } catch (e) {
-        console.error("Erro ao atualizar o estado local:", e);
-        return { data: null, error: e };
     }
-    const { data, error } = await api.saveNewRequisition(requisicao);
-    if (error) {
-    notify.showError('Erro de Sincronização', 'A requisição foi salva localmente, mas falhou ao enviar ao servidor. Verifique sua conexão e os dados. Erro: ' + error.message);
-}
     return { data, error };
 }
-
 // Em ui.js, substitua a função inteira por esta:
 
 export async function renderRequisicoesEmitidas() {

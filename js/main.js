@@ -1,4 +1,4 @@
-// js/main.js - VERSÃO FINAL COMPLETA E CORRIGIDA
+// js/main.js - VERSÃO ATUALIZADA
 import * as notify from './notifications.js';
 import * as dom from './dom.js';
 import * as state from './state.js';
@@ -7,24 +7,19 @@ import * as auth from './auth.js';
 import * as ui from './ui.js';
 import { supabaseClient } from './supabaseClient.js';
 
-// Em main.js, substitua a função handleStep1 por esta:
 function handleStep1() {
     const pregaoId = dom.pregaoInput.value;
-
-    // Validação simplificada para garantir que uma opção foi selecionada
     if (!pregaoId) {
         dom.errorStep1.textContent = 'Por favor, selecione um pregão da lista.';
         dom.errorStep1.classList.remove('hidden');
         return;
     }
-
     const db = state.getDB();
     if (db[pregaoId]) {
         state.updateCurrentState({ pregaoId: pregaoId, pregaoData: db[pregaoId] });
         ui.renderFornecedores();
         ui.navigateToStep(2);
     } else {
-        // Este erro não deve acontecer em condições normais, mas é bom mantê-lo
         dom.errorStep1.textContent = 'Erro: Pregão selecionado não foi encontrado no banco de dados.';
         dom.errorStep1.classList.remove('hidden');
     }
@@ -42,8 +37,6 @@ function handleStep2() {
         dom.errorStep2.classList.remove('hidden');
     }
 }
-
-// js/main.js
 
 function handleStep3() {
     const currentStateUpdates = {
@@ -71,9 +64,9 @@ function handleStep3() {
     };
     state.updateCurrentState(currentStateUpdates);
    if (!currentStateUpdates.setorRequisitante) {
-    notify.showError('Campo Obrigatório', 'Por favor, preencha o "Setor Requisitante".');
-    return;
-}
+        notify.showError('Campo Obrigatório', 'Por favor, preencha o "Setor Requisitante".');
+        return;
+    }
     ui.renderPreview();
     ui.navigateToStep(4);
 }
@@ -92,8 +85,8 @@ async function handleSaveConfig(e) {
         dom.configSaveSuccess.classList.remove('hidden');
         setTimeout(() => { dom.configSaveSuccess.classList.add('hidden') }, 3000);
     } else {
-    notify.showError('Oops...', 'Falha ao salvar as configurações.');
-}
+        notify.showError('Oops...', 'Falha ao salvar as configurações.');
+    }
 }
 
 async function handleAdminFormSubmit(e) {
@@ -104,32 +97,25 @@ async function handleAdminFormSubmit(e) {
         const objeto = document.getElementById('adminPregaoObjeto').value.trim();
         if (!numeroPregao || !objeto) return notify.showError('Por favor, preencha todos os campos do pregão.');
         const { error } = await api.addPregao(numeroPregao, objeto);
-       // CÓDIGO NOVO em main.js
-if (error) {
-    // Verifica se a mensagem de erro é sobre chave duplicada
-   if (error.message.includes('duplicate key value violates unique constraint')) {
-    notify.showError('Pregão Duplicado', 'Esse pregão já está cadastrado, por favor, confirme o número.');
-} else {
-    notify.showError('Falha ao adicionar', 'Erro: ' + error.message);
-}
-// ...
-// ...
-} else {
-    notify.showSuccess('Pregão adicionado com sucesso!'); // <-- LINHA NOVA
-    form.reset();
-    ui.renderAdminView();
-}
-// ...
+        if (error) {
+           if (error.message.includes('duplicate key value violates unique constraint')) {
+                notify.showError('Pregão Duplicado', 'Esse pregão já está cadastrado, por favor, confirme o número.');
+            } else {
+                notify.showError('Falha ao adicionar', 'Erro: ' + error.message);
+            }
+        } else {
+            notify.showSuccess('Pregão adicionado com sucesso!');
+            form.reset();
+            ui.renderAdminView();
+        }
     } else if (form.classList.contains('formAddFornecedor')) {
         const nome = form.elements.nome.value.trim();
         const cnpj = form.elements.cnpj.value.trim();
         const pregaoId = form.dataset.pregaoId;
         if (!nome || !cnpj) return alert('Por favor, preencha todos os campos do fornecedor.');
         const { error } = await api.addFornecedor(nome, cnpj, pregaoId);
-      
         if (error) { notify.showError('Falha ao adicionar', 'Erro: ' + error.message); }
         else { notify.showSuccess('Fornecedor adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }  
-
     } else if (form.classList.contains('formAddItem')) {
         const fornecedorId = form.dataset.fornecedorId;
         const itemData = {
@@ -141,13 +127,12 @@ if (error) {
             quantidade_max: parseInt(form.elements.quantidadeMax.value, 10),
             valor: parseFloat(form.elements.valor.value)
         };
-        // ... outros `else if` ...
-if (!itemData.descricao || isNaN(itemData.quantidade_max) || isNaN(itemData.valor)) {
-    return notify.showError('Campos Obrigatórios', 'Descrição, Quantidade e Valor são obrigatórios.');
-}
-// ...
-if (error) { notify.showError('Falha ao adicionar', 'Erro: ' + error.message); }
-else { notify.showSuccess('Item adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }
+        if (!itemData.descricao || isNaN(itemData.quantidade_max) || isNaN(itemData.valor)) {
+            return notify.showError('Campos Obrigatórios', 'Descrição, Quantidade e Valor são obrigatórios.');
+        }
+        const { error } = await api.addItem(itemData);
+        if (error) { notify.showError('Falha ao adicionar', 'Erro: ' + error.message); }
+        else { notify.showSuccess('Item adicionado com sucesso!'); form.reset(); ui.renderAdminView(); }
     }
 }
 
@@ -158,28 +143,28 @@ async function handleAdminClick(e) {
         ui.openEditPregaoModal(pregaoId);
     } else if (target.classList.contains('delete-pregao')) {
         const pregaoId = target.dataset.pregaoId;
-        if (confirm('Tem certeza que deseja excluir este pregão?')) {
+        const result = await notify.showConfirm('Excluir Pregão?', 'Todos os fornecedores e itens associados serão perdidos.');
+        if (result.isConfirmed) {
             const sucesso = await api.deletePregao(pregaoId);
-            if (sucesso) { alert('Pregão excluído!'); ui.renderAdminView(); }
-            else { alert('Falha ao excluir o pregão.'); }
+            if (sucesso) { notify.showSuccess('Pregão excluído!'); ui.renderAdminView(); }
+            else { notify.showError('Oops...', 'Falha ao excluir o pregão.'); }
         }
     } else if (target.classList.contains('delete-fornecedor')) {
         const fornecedorId = target.dataset.fornecedorId;
         const result = await notify.showConfirm('Excluir Fornecedor?', 'A ação não poderá ser revertida.');
-if (result.isConfirmed) {
-    const sucesso = await api.deleteFornecedor(fornecedorId);
-    if (sucesso) { notify.showSuccess('Fornecedor excluído!'); ui.renderAdminView(); }
-    else { notify.showError('Oops...', 'Falha ao excluir o fornecedor.'); }
-}
-        
+        if (result.isConfirmed) {
+            const sucesso = await api.deleteFornecedor(fornecedorId);
+            if (sucesso) { notify.showSuccess('Fornecedor excluído!'); ui.renderAdminView(); }
+            else { notify.showError('Oops...', 'Falha ao excluir o fornecedor.'); }
+        }
     } else if (target.classList.contains('delete-item')) {
         const itemId = target.dataset.itemId;
         const result = await notify.showConfirm('Excluir Item?', 'A ação não poderá ser revertida.');
-if (result.isConfirmed) {
-    const sucesso = await api.deleteItem(itemId);
-    if (sucesso) { notify.showSuccess('Item excluído!'); ui.renderAdminView(); }
-    else { notify.showError('Oops...', 'Falha ao excluir o item.'); }
-}
+        if (result.isConfirmed) {
+            const sucesso = await api.deleteItem(itemId);
+            if (sucesso) { notify.showSuccess('Item excluído!'); ui.renderAdminView(); }
+            else { notify.showError('Oops...', 'Falha ao excluir o item.'); }
+        }
     }
 }
 
@@ -192,9 +177,11 @@ async function handleEditPregaoSubmit(e) {
     };
     const sucesso = await api.updatePregao(pregaoId, updatedData);
     if (sucesso) {
-    notify.showSuccess('Pregão atualizado com sucesso!');
+        notify.showSuccess('Pregão atualizado com sucesso!');
+        ui.closeEditModal();
+        ui.renderAdminView();
     } else {
-    notify.showError('Oops...', 'Falha ao atualizar o pregão.');
+        notify.showError('Oops...', 'Falha ao atualizar o pregão.');
     }
 }
 
@@ -218,12 +205,9 @@ function setupEventListeners() {
             const password = form.elements.newUserInputPassword.value;
             const role = form.elements.newUserInputRole.value;
             const statusEl = document.getElementById('addUserStatus');
-
             statusEl.textContent = 'Adicionando...';
             statusEl.className = 'text-sm mt-2 font-medium text-blue-600';
-
             const { error } = await api.createNewUser(email, password, role);
-
             if (error) {
                 statusEl.textContent = `Erro: ${error.message}`;
                 statusEl.className = 'text-sm mt-2 font-medium text-red-600';
@@ -231,32 +215,25 @@ function setupEventListeners() {
                 statusEl.textContent = 'Usuário adicionado com sucesso!';
                 statusEl.className = 'text-sm mt-2 font-medium text-green-600';
                 form.reset();
-                // Atualiza a lista de usuários para mostrar o novo
                 ui.renderUserManagementView();
             }
         }
     });
 
     addListener(dom.userManagementSection, 'click', async (e) => {
-        // Verifica se o alvo do clique foi um botão de excluir usuário
         if (e.target.classList.contains('delete-user-btn')) {
             const userId = e.target.dataset.userId;
             const userEmail = e.target.dataset.userEmail;
-
-            // Pede confirmação
             const result = await notify.showConfirm(
                 `Excluir ${userEmail}?`,
                 'Esta ação é permanente e não pode ser desfeita.'
             );
-
             if (result.isConfirmed) {
                 const { error } = await api.deleteUser(userId);
-
                 if (error) {
                     notify.showError('Erro ao excluir', error.message);
                 } else {
                     notify.showSuccess('Usuário excluído com sucesso!');
-                    // Atualiza a lista para remover o usuário da tela
                     ui.renderUserManagementView();
                 }
             }
@@ -325,6 +302,7 @@ function setupEventListeners() {
         state.updateCurrentState({ selectedItems: currentState.selectedItems });
         ui.updateTotal();
     });
+
     addListener(dom.listRequisicoesEmitidas, 'click', async (e) => {
         const target = e.target;
         if (target.classList.contains('download-historic-pdf')) {
@@ -337,40 +315,99 @@ function setupEventListeners() {
             const requisitionId = target.dataset.requisitionId;
             const result = await notify.showConfirm('Excluir Requisição?', 'O saldo dos itens será restaurado.');
             if (result.isConfirmed) {
-                // 1. Ativa o nosso novo estado de carregamento
                 ui.showButtonLoading(target, 'Excluindo...');
-
                 try {
                     const sucesso = await api.deleteRequisition(requisitionId);
-
                     if (sucesso) {
-                        alert('Requisição excluída e saldos restaurados com sucesso!');
+                        notify.showSuccess('Requisição excluída e saldos restaurados com sucesso!');
                         const databaseAtualizado = await api.loadInitialData();
                         state.setDatabase(databaseAtualizado);
-                        ui.renderRequisicoesEmitidas(); // A lista será redesenhada, então não precisamos restaurar o botão
+                        ui.renderRequisicoesEmitidas();
                     } else {
-                        alert('Falha ao excluir a requisição.');
-                        // 2. Restaura o botão em caso de falha
+                        notify.showError('Oops...', 'Falha ao excluir a requisição.');
                         ui.hideButtonLoading(target);
                     }
                 } catch (error) {
                     console.error("Erro ao excluir requisição:", error);
-                    alert('Ocorreu um erro inesperado ao excluir a requisição.');
-                    // 3. Garante que o botão seja restaurado mesmo em caso de erro inesperado
+                    notify.showError('Erro Inesperado', 'Ocorreu um erro ao excluir a requisição.');
                     ui.hideButtonLoading(target);
                 }
             }
+        } else if (target.classList.contains('edit-requisition')) {
+            const requisitionId = target.dataset.requisitionId;
+            const requisicoes = await api.getSavedRequisitions();
+            const reqData = requisicoes.find(r => r.id == requisitionId);
+            if (reqData) {
+                state.updateCurrentState({ originalRequisitionForEdit: reqData });
+                ui.openEditRequisitionModal(reqData);
+            } else {
+                notify.showError('Erro', 'Não foi possível encontrar os dados da requisição para edição.');
+            }
         }
     });
+
     addListener(dom.adminPregoesContainer, 'submit', handleAdminFormSubmit);
     addListener(dom.adminPregoesContainer, 'click', handleAdminClick);
     addListener(dom.formAddPregao, 'submit', handleAdminFormSubmit);
     addListener(dom.formConfiguracoes, 'submit', handleSaveConfig);
     addListener(dom.formEditPregao, 'submit', handleEditPregaoSubmit);
     addListener(dom.btnCancelEdit, 'click', ui.closeEditModal);
+
+    addListener(dom.btnCancelEditRequisition, 'click', ui.closeEditRequisitionModal);
+    addListener(dom.formEditRequisition, 'submit', async (e) => {
+        e.preventDefault();
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        ui.showButtonLoading(submitButton, 'Salvando...');
+        
+        const originalRequisition = state.getCurrentState().originalRequisitionForEdit;
+        if (!originalRequisition) {
+            notify.showError('Erro Crítico', 'Não foi possível encontrar os dados originais da requisição. Tente novamente.');
+            ui.hideButtonLoading(submitButton);
+            return;
+        }
+
+        const updatedData = { ...originalRequisition.dados_completos };
+        
+        updatedData.setorRequisitante = document.getElementById('editSetorInput').value;
+        updatedData.nup = document.getElementById('editNupInput').value;
+        updatedData.justificativa = document.getElementById('editJustificativaInput').value;
+
+        updatedData.selectedItems = {};
+        let newTotalValue = 0;
+        const itemInputs = dom.editItemsTableBody.querySelectorAll('.edit-item-quantity');
+        const fornecedor = updatedData.fornecedorData;
+
+        itemInputs.forEach(input => {
+            const qty = parseInt(input.value, 10);
+            if (qty > 0) {
+                const itemId = input.dataset.itemId;
+                updatedData.selectedItems[itemId] = qty;
+                const itemData = fornecedor.itens.find(i => i.id === itemId);
+                if (itemData) {
+                    newTotalValue += itemData.valor * qty;
+                }
+            }
+        });
+        updatedData.valorTotal = newTotalValue;
+
+        const { error } = await api.updateRequisition(originalRequisition.id, originalRequisition.dados_completos, updatedData);
+
+        if (error) {
+            notify.showError('Falha ao Atualizar', error.message);
+        } else {
+            notify.showSuccess('Requisição atualizada com sucesso!');
+            ui.closeEditRequisitionModal();
+            const db = await api.loadInitialData();
+            state.setDatabase(db);
+            ui.renderRequisicoesEmitidas();
+        }
+
+        ui.hideButtonLoading(submitButton);
+    });
 }
 
 async function initializeApp() {
+    dom.initializeDomElements();
     setupEventListeners();
 
     const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
@@ -409,16 +446,16 @@ async function initializeApp() {
     });
 
     const [dbData, settingsData] = await Promise.all([
-    api.loadInitialData(),
-    api.getSettings()
-]);
-state.setInitialData({
-    database: dbData,
-    requisicoesSalvas: [],
-    proximoNumeroRequisicao: null, // Não é mais usado
-    users: [],
-    configuracoes: settingsData
-});
+        api.loadInitialData(),
+        api.getSettings()
+    ]);
+    state.setInitialData({
+        database: dbData,
+        requisicoesSalvas: [],
+        proximoNumeroRequisicao: null,
+        users: [],
+        configuracoes: settingsData
+    });
 
     dom.loginView.classList.add('hidden');
     dom.appContainer.classList.remove('hidden');
@@ -426,6 +463,5 @@ state.setInitialData({
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    dom.initializeDomElements();
     initializeApp();
 });

@@ -18,7 +18,8 @@ export let loginView, appContainer, loginForm, loginError, welcomeMessage, logou
            defaultConformadorFuncInput, defaultOrdenadorInput, defaultOrdenadorFuncInput,
            btnCreateBackup, backupFileInput, btnRestoreBackup, restoreStatus, editModal,
            editModalTitle, formEditPregao, editPregaoId, editPregaoNumero,
-           editPregaoObjeto, btnCancelEdit, previewJustificativa, numeroRequisicaoInput;
+           editPregaoObjeto, btnCancelEdit, previewJustificativa, numeroRequisicaoInput,
+           editRequisitionModal, formEditRequisition, editItemsTableBody, btnCancelEditRequisition;
 
 // 2. Criamos uma função que será chamada APENAS quando o HTML estiver pronto.
 export function initializeDomElements() {
@@ -111,4 +112,8 @@ export function initializeDomElements() {
     btnCancelEdit = document.getElementById('btnCancelEdit');
     previewJustificativa = document.getElementById('previewJustificativa');
     numeroRequisicaoInput = document.getElementById('numeroRequisicaoInput');
+    editRequisitionModal = document.getElementById('editRequisitionModal');
+    formEditRequisition = document.getElementById('formEditRequisition');
+    editItemsTableBody = document.getElementById('editItemsTableBody');
+    btnCancelEditRequisition = document.getElementById('btnCancelEditRequisition');
 }

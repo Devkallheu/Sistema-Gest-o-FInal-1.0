@@ -40,8 +40,8 @@
             <p id="welcomeMessage" class="text-md text-gray-500 mt-1"></p>
             <div class="absolute top-0 right-0 flex items-center gap-4">
                 <button id="homeButton" title="Voltar ao Início" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-2 px-4 rounded-lg transition text-sm">
-    Início
-</button>
+                    Início
+                </button>
                 <button id="logoutButton" title="Sair do Sistema" class="bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-2 px-4 rounded-lg transition text-sm">
                     Sair
                 </button>
@@ -64,8 +64,8 @@
                     <div class="flex flex-col sm:flex-row items-end gap-4">
                         <div class="w-full">
                            <label for="pregaoInput" class="block text-sm font-medium text-gray-700 mb-1">Selecione o Pregão</label>
-<select id="pregaoInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white">
-    </select>
+                            <select id="pregaoInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white">
+                            </select>
                         </div>
                         <button id="btnStep1" class="w-full sm:w-auto bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">Avançar</button>
                     </div>
@@ -78,11 +78,9 @@
                         <button id="backToStep1" class="text-sm text-blue-600 hover:underline">Voltar</button>
                     </div>
                     <p id="pregaoInfo" class="text-gray-600 mb-4"></p>
-
                     <div class="mb-4">
                         <input type="search" id="fornecedorSearchInput" placeholder="Buscar por nome ou CNPJ..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                     </div>
-
                     <div id="fornecedoresList" class="space-y-3"></div>
                     <div id="errorStep2" class="text-red-600 mt-4 text-sm font-medium hidden"></div>
                     <div class="mt-6 flex justify-end">
@@ -103,8 +101,8 @@
                                     <input type="text" id="nupInput" placeholder="00000.000000/0000-00" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
                                 </div>
                                 <div class="md:col-span-2">
-                                <label for="numeroRequisicaoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número da Requisição (DFD)</label>
-                                <input type="text" id="numeroRequisicaoInput" placeholder="Ex: 001/2025" required class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
+                                    <label for="numeroRequisicaoInput" class="block text-sm font-medium text-gray-700">Número da Requisição (DFD)</label>
+                                    <input type="text" id="numeroRequisicaoInput" placeholder="Ex: 001/2025" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
                                 </div>
                                 <div>
                                     <label for="setorInput" class="block text-sm font-medium text-gray-700">Setor Requisitante (Interessado)</label>
@@ -212,15 +210,14 @@
                     <div class="bg-gray-50 p-4 rounded-lg border">
                         <h3 class="font-bold text-lg mb-2">Resumo da Requisição</h3>
                         <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-    <span class="font-semibold text-gray-600">Nº da Requisição:</span><span id="previewNumRequisicao"></span>
-    <span class="font-semibold text-gray-600">Setor Requisitante:</span><span id="previewSetor"></span>
-    <span class="font-semibold text-gray-600">Pregão:</span><span id="previewPregao"></span>
-    <span class="font-semibold text-gray-600">Fornecedor:</span><span id="previewFornecedor"></span>
-    <span class="font-semibold text-gray-600">Valor Total:</span><span id="previewValor" class="font-bold"></span>
-    
-    <span class="font-semibold text-gray-600 col-span-2 mt-2">Justificativa da Necessidade:</span>
-    <div id="previewJustificativa" class="col-span-2 text-sm texto-formatado border-t pt-2"></div>
-</div>
+                            <span class="font-semibold text-gray-600">Nº da Requisição:</span><span id="previewNumRequisicao"></span>
+                            <span class="font-semibold text-gray-600">Setor Requisitante:</span><span id="previewSetor"></span>
+                            <span class="font-semibold text-gray-600">Pregão:</span><span id="previewPregao"></span>
+                            <span class="font-semibold text-gray-600">Fornecedor:</span><span id="previewFornecedor"></span>
+                            <span class="font-semibold text-gray-600">Valor Total:</span><span id="previewValor" class="font-bold"></span>
+                            <span class="font-semibold text-gray-600 col-span-2 mt-2">Justificativa da Necessidade:</span>
+                            <div id="previewJustificativa" class="col-span-2 text-sm texto-formatado border-t pt-2"></div>
+                        </div>
                     </div>
                     <div id="finalActions">
                         <div id="saveSuccess" class="hidden mt-4 p-3 text-center bg-green-100 text-green-800 rounded-lg">Requisição salva com sucesso! O saldo dos itens foi atualizado.</div>
@@ -345,95 +342,96 @@
                 </div>
             </main>
         </div>
-
     </div>
-<script type="module" src="./js/main.js"></script>
-    <footer class="text-center py-4 text-gray-500 text-sm">
-        Desenvolvido por: 3°Sgt Int Eugênio
-    </footer>
-<div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-    
-    <main class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg m-4">
-        
-        <h2 id="editModalTitle" class="text-2xl font-bold text-gray-700 mb-6">Editar Pregão</h2>
-        
-        <form id="formEditPregao" class="space-y-6">
 
-            <input type="hidden" id="editPregaoId">
+    <footer class="text-center py-4 text-gray-500 text-sm">
+        Desenvolvido por: 3°Sgt Int Eugênio
+    </footer>
 
-            <div>
-                <label for="editPregaoNumero" class="block text-sm font-medium text-gray-700">Número do Pregão</label>
-                <input type="text" id="editPregaoNumero" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-            </div>
-            <div>
-                <label for="editPregaoObjeto" class="block text-sm font-medium text-gray-700">Objeto do Pregão</label>
-                <input type="text" id="editPregaoObjeto" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-            </div>
-            
-            <div class="flex justify-end gap-4 pt-4">
-                <button type="button" id="btnCancelEdit" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
-                <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition">Salvar Alterações</button>
-            </div>
-        </form>
-    </main>
-</div>
-
-<div id="editRequisitionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-    <main class="w-full max-w-3xl bg-white p-8 rounded-xl shadow-lg m-4">
-        <h2 class="text-2xl font-bold text-gray-700 mb-6">Editar Requisição</h2>
-        
-        <form id="formEditRequisition" class="space-y-6 max-h-[70vh] overflow-y-auto pr-4">
-            <input type="hidden" id="editRequisitionId">
-            
-            <div class="bg-gray-50 p-4 rounded-lg border">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações da Capa</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="editNupInput" class="block text-sm font-medium text-gray-700">NUP</label>
-                        <input type="text" id="editNupInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                    </div>
-                    <div>
-                        <label for="editSetorInput" class="block text-sm font-medium text-gray-700">Setor Requisitante</label>
-                        <input type="text" id="editSetorInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                    </div>
-                    </div>
-            </div>
-
-            <div class="bg-gray-50 p-4 rounded-lg border">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Justificativa e Dados Orçamentários</h3>
+    <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+        <main class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg m-4">
+            <h2 id="editModalTitle" class="text-2xl font-bold text-gray-700 mb-6">Editar Pregão</h2>
+            <form id="formEditPregao" class="space-y-6">
+                <input type="hidden" id="editPregaoId">
                 <div>
-                    <label for="editJustificativaInput" class="block text-sm font-medium text-gray-700">Justificativa da Necessidade</label>
-                    <textarea id="editJustificativaInput" rows="6" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                    <label for="editPregaoNumero" class="block text-sm font-medium text-gray-700">Número do Pregão</label>
+                    <input type="text" id="editPregaoNumero" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 </div>
+                <div>
+                    <label for="editPregaoObjeto" class="block text-sm font-medium text-gray-700">Objeto do Pregão</label>
+                    <input type="text" id="editPregaoObjeto" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div class="flex justify-end gap-4 pt-4">
+                    <button type="button" id="btnCancelEdit" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition">Salvar Alterações</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <div id="editRequisitionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+        <main class="w-full max-w-4xl bg-white p-6 sm:p-8 rounded-xl shadow-lg m-4">
+            <h2 class="text-2xl font-bold text-gray-700 mb-6">Editar Requisição</h2>
+            
+            <form id="formEditRequisition" class="space-y-6 max-h-[80vh] overflow-y-auto pr-4">
+                <input type="hidden" id="editRequisitionId">
+                
+                <div class="bg-gray-50 p-4 rounded-lg border">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações Gerais</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="editNumeroRequisicaoInput" class="block text-sm font-medium text-gray-700">Número da Requisição (DFD)</label>
+                            <input type="text" id="editNumeroRequisicaoInput" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+                        </div>
+                        <div>
+                            <label for="editSetorInput" class="block text-sm font-medium text-gray-700">Setor Requisitante</label>
+                            <input type="text" id="editSetorInput" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                        </div>
+                         <div>
+                            <label for="editNupInput" class="block text-sm font-medium text-gray-700">NUP</label>
+                            <input type="text" id="editNupInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                        </div>
+                         <div class="md:col-span-2">
+                            <label for="editJustificativaInput" class="block text-sm font-medium text-gray-700">Justificativa da Necessidade</label>
+                            <textarea id="editJustificativaInput" rows="6" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                        </div>
+                    </div>
                 </div>
 
-            <div>
-                <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-4">Itens a Solicitar</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo Atual</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qtd. a Solicitar</th>
-                            </tr>
-                        </thead>
-                        <tbody id="editItemsTableBody" class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                    </table>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-4">Itens a Solicitar</h3>
+                    <p class="text-sm text-gray-500 mb-4">Ajuste as quantidades solicitadas. O saldo exibido reflete o estoque atual **mais** a quantidade que esta requisição já havia reservado.</p>
+                    <div class="overflow-x-auto border rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo Disponível</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qtd. a Solicitar (Nova)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="editItemsTableBody" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="flex justify-end gap-4 pt-4">
-                <button type="button" id="btnCancelEditRequisition" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
-                <button type="submit" class="bg-green-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-700 transition">Salvar Alterações</button>
-            </div>
-        </form>
-    </main>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="module" src="./js/main.js"></script>
-</body>
-</html>
+                
+                <div class="flex justify-between items-center pt-4">
+                    <div class="font-semibold text-lg">
+                        <span>Novo Valor Total: </span>
+                        <span id="editTotalValue" class="text-blue-700">R$ 0,00</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <button type="button" id="btnCancelEditRequisition" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
+                        <button type="submit" class="bg-green-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-700 transition">Salvar Alterações</button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="./js/main.js"></script>
+
 </body>
 </html>

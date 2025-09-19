@@ -9,7 +9,7 @@ export function generatePDF(reqData) {
     const margin = 15;
     const contentWidth = pageWidth - (margin * 2);
     const nup = reqData.nup || "_________________________";
-    const assuntoDfd = `DFD Nº ${String(reqData.numero).padStart(2, '0')} /2025`;
+    const assuntoDfd = `Requisição Nº ${String(reqData.numero).padStart(2, '0')} /2025`;
     const dataEmissao = new Date(reqData.data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase().replace(/ DE /g, ' ').replace('.', '');
     const localData = `Rio Branco-AC, ${dataEmissao}`; // Corrigido para hífen
     const interessado = reqData.setorRequisitante;
@@ -80,7 +80,7 @@ export function generatePDF(reqData) {
     currentY = 20;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(`DFD N ${String(reqData.numero).padStart(3, '0')}/ 2025`, margin, currentY);
+    doc.text(`Requisição N ${String(reqData.numero).padStart(3, '0')}/ 2025`, margin, currentY);
     doc.text(`NUP: ${reqData.nup || 'Não informado'}`, pageWidth - margin, currentY, { align: 'right' });
     
     currentY += 10;

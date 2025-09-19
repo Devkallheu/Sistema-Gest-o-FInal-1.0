@@ -1,4 +1,4 @@
-// js/ui.js - VERSÃO FINAL COM INICIALIZAÇÃO AUTOMÁTICA
+// js/ui.js - VERSÃO ATUALIZADA
 import * as notify from './notifications.js';
 import * as dom from './dom.js';
 import * as state from './state.js';
@@ -25,8 +25,6 @@ export function setupUIForUser() {
     }
 
     switchView('requisicao');
-
-    // ALTERAÇÃO ADICIONADA AQUI: Inicia uma nova requisição automaticamente
     startNewRequisition();
 }
 
@@ -117,8 +115,6 @@ export function startNewRequisition() {
     populatePregoesDropdown();
 }
 
-// Em ui.js, substitua a função renderFornecedores inteira por esta:
-
 export function renderFornecedores(searchTerm = '') {
     dom.fornecedoresList.innerHTML = '';
     dom.errorStep2.classList.add('hidden');
@@ -129,15 +125,10 @@ export function renderFornecedores(searchTerm = '') {
     dom.pregaoInfo.textContent = `Pregão ${currentState.pregaoId}: ${pregao.objeto}`;
 
     const lowerCaseSearchTerm = searchTerm.trim().toLowerCase();
-
-    // Filtra a lista de fornecedores com base no termo de busca
     const fornecedoresFiltrados = pregao.fornecedores.filter(fornecedor => {
         const nome = fornecedor.nome.toLowerCase();
-        // Limpa o CNPJ para buscar apenas por números
         const cnpj = fornecedor.cnpj.replace(/[^\d]/g, ''); 
         const termoBuscaLimpo = lowerCaseSearchTerm.replace(/[^\d]/g, '');
-
-        // Retorna verdadeiro se o nome OU o CNPJ incluírem o termo buscado
         return nome.includes(lowerCaseSearchTerm) || (termoBuscaLimpo && cnpj.includes(termoBuscaLimpo));
     });
 
@@ -185,14 +176,9 @@ export function updateTotal() {
     dom.btnStep3.disabled = total <= 0;
 }
 
-// js/ui.js - SUBSTITUA SUA FUNÇÃO renderPreview PELA VERSÃO ABAIXO
-
 export function renderPreview() {
     const currentState = state.getCurrentState();
-
-    // A lógica antiga foi removida. Agora usamos o 'numero' que veio do formulário no Passo 3.
     dom.previewNumRequisicao.textContent = currentState.numero;
-    
     dom.previewSetor.textContent = currentState.setorRequisitante;
     dom.previewPregao.textContent = currentState.pregaoId;
     dom.previewFornecedor.textContent = currentState.fornecedorData.nome;
@@ -204,13 +190,10 @@ export function renderPreview() {
     dom.btnSave.disabled = false;
 }
 
-// js/ui.js - SUBSTITUA SUA FUNÇÃO saveRequisition PELA VERSÃO ABAIXO
-
 export async function saveRequisition() {
     const currentState = state.getCurrentState();
     const loggedInUser = state.getLoggedInUser();
     
-    // O objeto 'requisicao' agora busca o 'numero' do estado atual (que foi digitado no formulário)
     const requisicao = {
         pregaoId: currentState.pregaoId,
         fornecedorData: currentState.fornecedorData,
@@ -234,12 +217,8 @@ export async function saveRequisition() {
         conformadorFunc: currentState.conformadorFunc,
         ordenador: currentState.ordenador,
         ordenadorFunc: currentState.ordenadorFunc,
-        
-        // --- CORREÇÕES APLICADAS AQUI ---
-        numero: currentState.numero, // Pega o número manual digitado no Passo 3
-        valorTotal: currentState.valorTotal, // Pega o valor total já calculado
-        // ----------------------------------
-
+        numero: currentState.numero,
+        valorTotal: currentState.valorTotal,
         data: new Date().toISOString(),
         createdBy: loggedInUser.username
     };
@@ -248,18 +227,16 @@ export async function saveRequisition() {
 
     if (error) {
         notify.showError('Erro de Sincronização', 'A requisição falhou ao ser salva. Os saldos NÃO foram alterados. Erro: ' + error.message);
-        dom.btnSave.disabled = false; // Reativa o botão em caso de erro
+        dom.btnSave.disabled = false;
     } else {
-        const db = await api.loadInitialData(); // Recarrega os dados para garantir consistência
+        const db = await api.loadInitialData();
         state.setDatabase(db);
-        // Não incrementamos mais o número, pois é manual
         dom.saveSuccess.classList.remove('hidden');
         dom.finalActions.classList.add('hidden');
         dom.startNewAction.classList.remove('hidden');
     }
     return { data, error };
 }
-// Em ui.js, substitua a função inteira por esta:
 
 export async function renderRequisicoesEmitidas() {
     const loggedInUser = state.getLoggedInUser();
@@ -267,7 +244,6 @@ export async function renderRequisicoesEmitidas() {
     
     const requisicoesSalvas = await api.getSavedRequisitions();
     
-    // 1. A lógica para decidir QUAIS requisições mostrar continua a mesma:
     const isAdmin = loggedInUser.role === 'admin';
     let reqsToShow = isAdmin ? requisicoesSalvas : requisicoesSalvas.filter(req => req.criado_por_id === loggedInUser.id);
 
@@ -280,8 +256,6 @@ export async function renderRequisicoesEmitidas() {
     
     reqsToShow.forEach(req => {
         const reqData = req.dados_completos;
-        
-        // 2. NOVA LÓGICA: Decide se o botão "Excluir" deve aparecer
         const canDelete = isAdmin || loggedInUser.id === req.criado_por_id;
 
         tableHTML += `<tr>
@@ -289,17 +263,20 @@ export async function renderRequisicoesEmitidas() {
             <td class="px-4 py-4 text-sm text-gray-600">${new Date(reqData.data).toLocaleDateString('pt-BR')}</td>
             <td class="px-4 py-4 text-sm text-gray-600">${reqData.setorRequisitante}</td>
             <td class="px-4 py-4 text-sm font-semibold text-gray-800">R$ ${reqData.valorTotal.toFixed(2).replace('.', ',')}</td>
-            <td class="px-4 py-4 text-sm">
-                <button class="download-historic-pdf text-blue-600 hover:text-blue-800" 
-                        data-requisition-id="${req.id}">
+            <td class="px-4 py-4 text-sm whitespace-nowrap">
+                <button class="download-historic-pdf text-blue-600 hover:text-blue-800" data-requisition-id="${req.id}">
                   Baixar PDF
                 </button>
-                ${canDelete ? // Se 'canDelete' for verdadeiro, mostra o botão Excluir
-                  `<button class="delete-requisition text-red-500 hover:text-red-700 ml-4 font-semibold" 
-                           data-requisition-id="${req.id}">
+                
+                <button class="edit-requisition text-yellow-600 hover:text-yellow-800 ml-4 font-semibold" data-requisition-id="${req.id}">
+                  Editar
+                </button>
+
+                ${canDelete ?
+                  `<button class="delete-requisition text-red-500 hover:text-red-700 ml-4 font-semibold" data-requisition-id="${req.id}">
                      Excluir
                    </button>` 
-                  : '' // Se não, não mostra nada
+                  : ''
                 }
             </td>
         </tr>`;
@@ -314,9 +291,9 @@ export function handleDownloadHistoricPdf(requisicaoCompleta) {
         try {
             generatePDF(requisicaoCompleta);
         } catch (error) {
-    console.error("Erro PDF:", error);
-    notify.showError('Erro ao Gerar PDF', 'Houve um problema ao tentar criar o documento.');
-}
+            console.error("Erro PDF:", error);
+            notify.showError('Erro ao Gerar PDF', 'Houve um problema ao tentar criar o documento.');
+        }
     }
 }
 
@@ -380,8 +357,8 @@ export function openEditPregaoModal(pregaoId) {
         }
     }
     if (!pregaoData) {
-    notify.showError('Erro', 'Pregão não encontrado para edição.');
-    return;
+        notify.showError('Erro', 'Pregão não encontrado para edição.');
+        return;
     }
     dom.editPregaoId.value = pregaoId;
     dom.editPregaoNumero.value = pregaoNumero;
@@ -389,12 +366,10 @@ export function openEditPregaoModal(pregaoId) {
     dom.editModal.classList.remove('hidden');
 }
 
-// NOVA FUNÇÃO PARA RENDERIZAR O GERENCIAMENTO DE USUÁRIOS
 export async function renderUserManagementView() {
     const container = dom.userManagementSection;
     if (!container) return;
 
-    // Limpa o formulário antigo e renderiza o novo
     container.innerHTML = `
         <h2 class="text-xl font-semibold mb-4">Gerenciar Usuários</h2>
         <div class="bg-gray-50 p-4 rounded-lg border mb-6">
@@ -421,56 +396,43 @@ export async function renderUserManagementView() {
         return;
     }
 
- let tableHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Papel</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Último Login</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">`;
-users.forEach(user => {
-    const userRole = user.user_metadata?.role || 'requisitante';
-    const loggedInUser = state.getLoggedInUser();
+    let tableHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Papel</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Último Login</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">`;
+    users.forEach(user => {
+        const userRole = user.user_metadata?.role || 'requisitante';
+        const loggedInUser = state.getLoggedInUser();
 
-    tableHTML += `<tr>
-        <td class="px-4 py-4 text-sm font-medium text-gray-800">${user.email}</td>
-        <td class="px-4 py-4 text-sm">${userRole}</td>
-        <td class="px-4 py-4 text-sm text-gray-600">${user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString('pt-BR') : 'Nunca'}</td>
-        <td class="px-4 py-4 text-sm">
-            ${user.id !== loggedInUser.id ? // Só mostra o botão se não for o próprio usuário
-              `<button class="delete-user-btn text-red-500 hover:text-red-700 font-semibold" 
-                       data-user-id="${user.id}"
-                       data-user-email="${user.email}">
-                 Excluir
-               </button>` 
-              : '<span class="text-xs text-gray-400">Usuário Atual</span>'
-            }
-        </td>
-    </tr>`;
-});
-tableHTML += `</tbody></table>`;
-usersListContainer.innerHTML = tableHTML;
+        tableHTML += `<tr>
+            <td class="px-4 py-4 text-sm font-medium text-gray-800">${user.email}</td>
+            <td class="px-4 py-4 text-sm">${userRole}</td>
+            <td class="px-4 py-4 text-sm text-gray-600">${user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString('pt-BR') : 'Nunca'}</td>
+            <td class="px-4 py-4 text-sm">
+                ${user.id !== loggedInUser.id ? 
+                  `<button class="delete-user-btn text-red-500 hover:text-red-700 font-semibold" 
+                           data-user-id="${user.id}"
+                           data-user-email="${user.email}">
+                     Excluir
+                   </button>` 
+                  : '<span class="text-xs text-gray-400">Usuário Atual</span>'
+                }
+            </td>
+        </tr>`;
+    });
+    tableHTML += `</tbody></table>`;
+    usersListContainer.innerHTML = tableHTML;
 }
-
-// Em ui.js, substitua a função inteira por esta versão corrigida
 
 export function populatePregoesDropdown() {
     const selectEl = dom.pregaoInput;
     const database = state.getDB();
     const pregoesIds = Object.keys(database);
-
-    // =================================================================
-    // ========= ALTERAÇÃO ADICIONADA AQUI PARA ORDENAR A LISTA =========
-    // =================================================================
     pregoesIds.sort();
-    // =================================================================
-
-    // Limpa opções antigas
     selectEl.innerHTML = '';
-
-    // Adiciona a primeira opção padrão
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = 'Selecione um pregão...';
     defaultOption.disabled = true;
     defaultOption.selected = true;
     selectEl.appendChild(defaultOption);
-
-    // Adiciona cada pregão como uma nova opção (agora de forma ordenada)
     pregoesIds.forEach(pregaoNumero => {
         const pregaoData = database[pregaoNumero];
         const option = document.createElement('option');
@@ -479,34 +441,89 @@ export function populatePregoesDropdown() {
         selectEl.appendChild(option);
     });
 }
-// Adicione no final do ficheiro ui.js
 
-/**
- * Ativa o estado de carregamento de um botão.
- * @param {HTMLButtonElement} button O elemento do botão a ser modificado.
- * @param {string} loadingText O texto a ser exibido durante o carregamento (ex: "Salvando...").
- */
 export function showButtonLoading(button, loadingText = 'Aguarde...') {
-  // Salva o conteúdo original do botão para poder restaurá-lo depois.
   button.dataset.originalContent = button.innerHTML;
-  
-  // Desativa o botão.
   button.disabled = true;
-  
-  // Define o novo conteúdo com o spinner e o texto de carregamento.
   button.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
 }
 
-/**
- * Restaura um botão ao seu estado original após o carregamento.
- * @param {HTMLButtonElement} button O elemento do botão a ser restaurado.
- */
 export function hideButtonLoading(button) {
-  // Verifica se havia conteúdo original salvo.
   if (button.dataset.originalContent) {
     button.innerHTML = button.dataset.originalContent;
   }
-  
-  // Reativa o botão.
   button.disabled = false;
+}
+
+function calculateModalTotal(fornecedor, tableBody) {
+    let total = 0;
+    const quantityInputs = tableBody.querySelectorAll('.edit-item-quantity');
+    quantityInputs.forEach(input => {
+        const quantity = parseInt(input.value, 10) || 0;
+        if (quantity > 0) {
+            const itemId = input.dataset.itemId;
+            const itemData = fornecedor.itens.find(i => i.id === itemId);
+            if (itemData) {
+                total += itemData.valor * quantity;
+            }
+        }
+    });
+    document.getElementById('editTotalValue').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+}
+
+export async function openEditRequisitionModal(requisition) {
+    const db = state.getDB();
+    const reqData = requisition.dados_completos;
+    const pregao = db[reqData.pregaoId];
+    if (!pregao) {
+        notify.showError('Erro', 'Pregão associado a esta requisição não foi encontrado.');
+        return;
+    }
+    const fornecedor = pregao.fornecedores.find(f => f.id === reqData.fornecedorData.id);
+    if (!fornecedor) {
+        notify.showError('Erro', 'Fornecedor associado a esta requisição não foi encontrado.');
+        return;
+    }
+
+    document.getElementById('editRequisitionId').value = requisition.id;
+    document.getElementById('editNumeroRequisicaoInput').value = reqData.numero;
+    document.getElementById('editSetorInput').value = reqData.setorRequisitante;
+    document.getElementById('editNupInput').value = reqData.nup;
+    document.getElementById('editJustificativaInput').value = reqData.justificativa;
+
+    dom.editItemsTableBody.innerHTML = '';
+    fornecedor.itens.forEach(item => {
+        const tr = document.createElement('tr');
+        const originalQty = reqData.selectedItems[item.id] || 0;
+        
+        const saldoDisponivelParaEdicao = item.quantidadeMax + originalQty;
+
+        tr.innerHTML = `
+            <td class="px-6 py-4 whitespace-normal">
+                <div class="text-sm font-medium text-gray-900">${item.descricao}</div>
+                <div class="text-xs text-gray-500">Valor Unit.: R$ ${item.valor.toFixed(2).replace('.', ',')}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm font-bold text-gray-700">${saldoDisponivelParaEdicao}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <input type="number" data-item-id="${item.id}" value="${originalQty}" 
+                       min="0" max="${saldoDisponivelParaEdicao}" 
+                       class="edit-item-quantity w-24 px-2 py-1 border border-gray-300 rounded-md">
+            </td>
+        `;
+        dom.editItemsTableBody.appendChild(tr);
+    });
+    
+    calculateModalTotal(fornecedor, dom.editItemsTableBody);
+
+    dom.editItemsTableBody.addEventListener('input', () => calculateModalTotal(fornecedor, dom.editItemsTableBody));
+
+    dom.editRequisitionModal.classList.remove('hidden');
+}
+
+export function closeEditRequisitionModal() {
+    dom.editRequisitionModal.classList.add('hidden');
+    dom.formEditRequisition.reset();
+    dom.editItemsTableBody.innerHTML = '';
 }

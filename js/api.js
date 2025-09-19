@@ -1,7 +1,8 @@
-// js/api.js - VERSÃO FINAL CORRIGIDA E PADRONIZADA
+// js/api.js - VERSÃO ATUALIZADA
 import { supabaseClient } from './supabaseClient.js';
 
 // ================= PREGÕES =================
+// js/api.js - VERSÃO FINAL E CORRETA
 export async function loadInitialData() {
     const { data: pregoes, error } = await supabaseClient
         .from('pregoes')
@@ -12,9 +13,21 @@ export async function loadInitialData() {
         return {}; 
     }
 
+    if (!pregoes) {
+        console.warn("O Supabase retornou 'null' como dados.");
+        return {};
+    }
+
     const databaseObject = {};
     for (const pregao of pregoes) {
-        databaseObject[pregao.numero_pregao] = {
+        const numeroKey = pregao.numero_pregao || pregao.numero;
+
+        if (!numeroKey) {
+            console.error("Objeto de pregão inválido recebido do Supabase. Não contém a coluna 'numero_pregao' ou 'numero'. Objeto:", pregao);
+            continue;
+        }
+
+        databaseObject[numeroKey] = {
             id: pregao.id,
             objeto: pregao.objeto,
             fornecedores: pregao.fornecedores.map(fornecedor => ({
@@ -35,9 +48,9 @@ export async function loadInitialData() {
             }))
         };
     }
+    
     return databaseObject;
 }
-
 export async function getPregoes() {
     const { data, error } = await supabaseClient
         .from('pregoes')
@@ -142,7 +155,6 @@ export async function deleteItem(itemId) {
 }
 
 // ================= REQUISIÇÕES =================
-// Função nova padronizada: lista requisições já salvas
 export async function getSavedRequisitions() {
     try {
         const { data, error } = await supabaseClient
@@ -161,7 +173,6 @@ export async function getSavedRequisitions() {
     }
 }
 
-// Função corrigida de salvar requisição
 export async function saveNewRequisition(requisitionData) {
     console.log("%c--- INICIANDO PROCESSO DE SALVAR REQUISIÇÃO ---", "color: blue; font-weight: bold;");
     console.log("Dados da requisição recebidos pela função:", requisitionData);
@@ -291,6 +302,93 @@ export async function deleteRequisition(requisitionId) {
     }
 }
 
+export async function updateRequisition(requisitionId, originalData, updatedData) {
+    console.log("%c--- INICIANDO PROCESSO DE ATUALIZAÇÃO DE REQUISIÇÃO ---", "color: orange; font-weight: bold;");
+    
+    try {
+        const allItemIds = new Set([
+            ...Object.keys(originalData.selectedItems),
+            ...Object.keys(updatedData.selectedItems)
+        ]);
+
+        // Passo 1: Verificar se há saldo para todas as alterações
+        for (const itemId of allItemIds) {
+            const itemOriginal = originalData.fornecedorData.itens.find(i => i.id === itemId);
+            if (!itemOriginal) continue;
+
+            const originalQty = originalData.selectedItems[itemId] || 0;
+            const updatedQty = updatedData.selectedItems[itemId] || 0;
+            const diff = updatedQty - originalQty; // Diferença a ser subtraída do estoque
+
+            if (diff > 0) { // Apenas checa se está tentando pegar mais itens
+                 const { data: currentItemData, error: currentItemError } = await supabaseClient
+                    .from('itens')
+                    .select('quantidade_max')
+                    .eq('id', itemOriginal.id_numerico)
+                    .single();
+
+                if (currentItemError) {
+                    throw new Error(`Erro ao buscar saldo do item ${itemOriginal.descricao}: ${currentItemError.message}`);
+                }
+                if (currentItemData.quantidade_max < diff) {
+                    throw new Error(`Saldo insuficiente para o item: ${itemOriginal.descricao}. Necessário: ${diff}, Disponível: ${currentItemData.quantidade_max}`);
+                }
+            }
+        }
+        
+        // Passo 2: Se todos os saldos são suficientes, aplicar as alterações
+        for (const itemId of allItemIds) {
+            const itemOriginal = originalData.fornecedorData.itens.find(i => i.id === itemId);
+            if (!itemOriginal) continue;
+
+            const originalQty = originalData.selectedItems[itemId] || 0;
+            const updatedQty = updatedData.selectedItems[itemId] || 0;
+            const saldo_diff = originalQty - updatedQty; 
+
+            if (saldo_diff !== 0) {
+                 const { data: currentItemData, error: currentItemError } = await supabaseClient
+                    .from('itens')
+                    .select('quantidade_max')
+                    .eq('id', itemOriginal.id_numerico)
+                    .single();
+                
+                if (currentItemError) throw currentItemError;
+
+                const novaQuantidade = currentItemData.quantidade_max + saldo_diff;
+
+                const { error: updateError } = await supabaseClient
+                    .from('itens')
+                    .update({ quantidade_max: novaQuantidade })
+                    .eq('id', itemOriginal.id_numerico);
+
+                if (updateError) {
+                    throw new Error(`Erro ao atualizar o saldo do item ${itemOriginal.descricao}: ${updateError.message}`);
+                }
+            }
+        }
+
+        // Passo 3: Atualizar o registro da requisição principal
+        const { data, error: updateRequisitionError } = await supabaseClient
+            .from('requisicoes')
+            .update({ 
+                dados_completos: updatedData,
+                valor_total: updatedData.valorTotal,
+                setor_requisitante: updatedData.setorRequisitante
+            })
+            .eq('id', requisitionId);
+
+        if (updateRequisitionError) throw updateRequisitionError;
+
+        console.log("%c--- ATUALIZAÇÃO CONCLUÍDA COM SUCESSO ---", "color: green; font-weight: bold;");
+        return { data, error: null };
+
+    } catch (error) {
+        console.error('%c--- PROCESSO DE ATUALIZAÇÃO INTERROMPIDO POR ERRO ---', 'color: red; font-weight: bold;');
+        console.error('Erro detalhado:', error);
+        return { data: null, error };
+    }
+}
+
 // ================= CONFIGURAÇÕES =================
 export async function getSettings() {
     const { data, error } = await supabaseClient
@@ -320,39 +418,31 @@ export async function saveSettings(settingsObject) {
     }
     return true;
 }
-// ================= USUÁRIOS =================
-// js/api.js
 
+// ================= USUÁRIOS =================
 export async function listUsers() {
     try {
         const { data, error } = await supabaseClient.functions.invoke('list-users');
-
         if (error) throw error;
-
-        // A função retorna um objeto { users: [...] }, então pegamos o array de dentro
         return { data: data.users, error: null };
     } catch (err) {
         console.error("Erro ao invocar a função list-users:", err);
         return { data: [], error: err };
     }
 }
-// Adicione no final do js/api.js
 
 export async function createNewUser(email, password, role) {
     try {
         const { data, error } = await supabaseClient.functions.invoke('create-user', {
             body: { email, password, role },
         });
-
         if (error) throw error;
-
         return { data, error: null };
     } catch (err) {
         console.error("Erro ao invocar a função create-user:", err);
         return { data: null, error: err };
     }
 }
-// js/api.js - NOVA VERSÃO DE DEPURAÇÃO DA FUNÇÃO deleteUser
 
 export async function deleteUser(userId) {
     try {
@@ -361,18 +451,10 @@ export async function deleteUser(userId) {
         });
 
         if (error) throw error;
-        
         return { data, error: null };
     } catch (err) {
-        // --- NOVAS LINHAS DE DEPURAÇÃO ADICIONADAS AQUI ---
-        console.log('Chaves do objeto de erro:', Object.keys(err));
-        console.log('Objeto de erro completo (como texto):', JSON.stringify(err, null, 2));
-        // ----------------------------------------------------
-
         console.error("Erro detalhado ao invocar a função delete-user:", err);
-        
         const specificMessage = err.context?.json?.error || err.message;
-
         return { data: null, error: { message: specificMessage } };
     }
 }

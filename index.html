@@ -12,6 +12,32 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Função auto-executável para evitar poluir o escopo global
+        (function() {
+            // Função para aplicar o tema (adicionar/remover a classe 'dark')
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+
+            // Tenta obter o tema do localStorage.
+            const savedTheme = localStorage.getItem('color-theme');
+
+            if (savedTheme) {
+                // Se houver um tema salvo, aplica-o.
+                applyTheme(savedTheme);
+            } else {
+                // Se não houver, verifica a preferência do sistema operacional.
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                applyTheme(prefersDark ? 'dark' : 'light');
+            }
+        })();
+    </script>
+    <!-- FIM DO SCRIPT DO TEMA -->
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
@@ -436,38 +462,36 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script type="module" src="./js/main.js"></script>
-    <script>
-    // Theme toggle
+<!-- Adicione no final do body, antes do fechamento </body> -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
     const themeToggleBtn = document.getElementById('theme-toggle');
     const darkIcon = document.getElementById('theme-toggle-dark-icon');
     const lightIcon = document.getElementById('theme-toggle-light-icon');
 
-    // Carregar preferencia salva ou padrão do sistema
-    if (
-        localStorage.getItem('color-theme') === 'dark' ||
-        (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
-        document.documentElement.classList.add('dark');
-        lightIcon.classList.remove('hidden');
-    } else {
-        document.documentElement.classList.remove('dark');
-        darkIcon.classList.remove('hidden');
+    // Função para atualizar a UI do ícone
+    function updateIcon() {
+        if (document.documentElement.classList.contains('dark')) {
+            darkIcon.classList.add('hidden');
+            lightIcon.classList.remove('hidden');
+        } else {
+            lightIcon.classList.add('hidden');
+            darkIcon.classList.remove('hidden');
+        }
     }
 
-    // Alternar ao clicar
-    themeToggleBtn.addEventListener('click', function () {
-        darkIcon.classList.toggle('hidden');
-        lightIcon.classList.toggle('hidden');
+    // Define o estado inicial do ícone no carregamento da página
+    updateIcon();
 
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-        }
+    // Adiciona o evento de clique para alternar o tema
+    themeToggleBtn.addEventListener('click', function () {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+        updateIcon();
     });
+});
 </script>
+
 
 </body>
 </html>

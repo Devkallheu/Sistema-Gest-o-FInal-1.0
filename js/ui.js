@@ -238,6 +238,8 @@ export async function saveRequisition() {
     return { data, error };
 }
 
+// DENTRO DO ARQUIVO ui.js - SUBSTITUA A FUNÇÃO INTEIRA
+
 export async function renderRequisicoesEmitidas() {
     const loggedInUser = state.getLoggedInUser();
     dom.listRequisicoesEmitidas.innerHTML = '<div class="flex justify-center items-center p-4"><div class="loader"></div></div>';
@@ -248,32 +250,34 @@ export async function renderRequisicoesEmitidas() {
     let reqsToShow = isAdmin ? requisicoesSalvas : requisicoesSalvas.filter(req => req.criado_por_id === loggedInUser.id);
 
     if (reqsToShow.length === 0) {
-        dom.listRequisicoesEmitidas.innerHTML = `<p class="text-gray-500">Nenhuma requisição foi emitida.</p>`;
+        dom.listRequisicoesEmitidas.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Nenhuma requisição foi emitida.</p>`;
         return;
     }
 
-    let tableHTML = `<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nº Req.</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Setor</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">`;
+    // A tabela agora tem classes para modo claro e escuro no <thead>
+    let tableHTML = `<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"><thead class="bg-gray-50 dark:bg-gray-700"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nº Req.</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Data</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Setor</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Valor</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Ações</th></tr></thead><tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">`;
     
     reqsToShow.forEach(req => {
         const reqData = req.dados_completos;
         const canDelete = isAdmin || loggedInUser.id === req.criado_por_id;
 
         tableHTML += `<tr>
-            <td class="px-4 py-4 text-sm font-bold text-gray-800">${String(reqData.numero).padStart(4, '0')}</td>
-            <td class="px-4 py-4 text-sm text-gray-600">${new Date(reqData.data).toLocaleDateString('pt-BR')}</td>
-            <td class="px-4 py-4 text-sm text-gray-600">${reqData.setorRequisitante}</td>
-            <td class="px-4 py-4 text-sm font-semibold text-gray-800">R$ ${reqData.valorTotal.toFixed(2).replace('.', ',')}</td>
+            <td class="px-4 py-4 text-sm font-bold text-gray-800 dark:text-gray-200">${String(reqData.numero).padStart(4, '0')}</td>
+            <td class="px-4 py-4 text-sm text-gray-600 dark:text-gray-400">${new Date(reqData.data).toLocaleDateString('pt-BR')}</td>
+            <td class="px-4 py-4 text-sm text-gray-600 dark:text-gray-400">${reqData.setorRequisitante}</td>
+            <td class="px-4 py-4 text-sm font-semibold text-gray-800 dark:text-gray-200">R$ ${reqData.valorTotal.toFixed(2).replace('.', ',')}</td>
             <td class="px-4 py-4 text-sm whitespace-nowrap">
-                <button class="download-historic-pdf text-blue-600 hover:text-blue-800" data-requisition-id="${req.id}">
+                
+                <button class="download-historic-pdf font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" data-requisition-id="${req.id}">
                   Baixar PDF
                 </button>
                 
-                <button class="edit-requisition text-yellow-600 hover:text-yellow-800 ml-4 font-semibold" data-requisition-id="${req.id}">
+                <button class="edit-requisition font-semibold text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 ml-4" data-requisition-id="${req.id}">
                   Editar
                 </button>
 
                 ${canDelete ?
-                  `<button class="delete-requisition text-red-500 hover:text-red-700 ml-4 font-semibold" data-requisition-id="${req.id}">
+                  `<button class="delete-requisition font-semibold text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 ml-4" data-requisition-id="${req.id}">
                      Excluir
                    </button>` 
                   : ''

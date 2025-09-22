@@ -1,32 +1,31 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html lang="pt-BR" class=""> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Requisição de Empenho</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="style.css" rel="stylesheet">
-    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
     <div id="viewLogin" class="flex items-center justify-center min-h-screen">
-        <main class="w-full max-w-md bg-white p-8 rounded-xl shadow-lg m-4">
-            <h1 class="text-2xl font-bold text-center text-gray-700 mb-6">Acesso ao Sistema</h1>
+        <main class="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg m-4">
+            <h1 class="text-2xl font-bold text-center text-gray-700 dark:text-gray-200 mb-6">Acesso ao Sistema</h1>
             <form id="loginForm" class="space-y-6">
                 <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700">Usuário</label>
-                    <input type="text" id="username" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Usuário</label>
+                    <input type="text" id="username" required class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
-                    <input type="password" id="password" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha</label>
+                    <input type="password" id="password" required class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div id="loginError" class="text-red-600 text-sm font-medium hidden">Usuário ou senha inválidos.</div>
                 <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition shadow-sm">Entrar</button>
@@ -36,36 +35,40 @@
 
     <div id="appContainer" class="hidden container mx-auto p-4 sm:p-6 md:p-8 max-w-5xl">
         <header class="text-center mb-6 relative">
-            <h1 class="text-3xl font-bold text-gray-700">Sistema de Requisição de Empenho</h1>
-            <p id="welcomeMessage" class="text-md text-gray-500 mt-1"></p>
+            <h1 class="text-3xl font-bold text-gray-700 dark:text-gray-200">Sistema de Requisição de Empenho</h1>
+            <p id="welcomeMessage" class="text-md text-gray-500 dark:text-gray-400 mt-1"></p>
+            
             <div class="absolute top-0 right-0 flex items-center gap-4">
-                <button id="homeButton" title="Voltar ao Início" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-2 px-4 rounded-lg transition text-sm">
-                    Início
+                <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 011.414 0l.707-.707a1 1 0 111.414 1.414l-.707-.707a1 1 0 01-1.414 0zM3 11a1 1 0 100 2H2a1 1 0 100-2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
                 </button>
-                <button id="logoutButton" title="Sair do Sistema" class="bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-2 px-4 rounded-lg transition text-sm">
-                    Sair
-                </button>
+                <button id="homeButton" title="Voltar ao Início" class="bg-blue-100 hover:bg-blue-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-blue-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transition text-sm">Início</button>
+                <button id="logoutButton" data-tooltip-target="tooltip-logout" type="button" class="bg-red-100 hover:bg-red-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-red-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transition text-sm">Sair</button>
+                <div id="tooltip-logout" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                    Encerrar a sessão
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
             </div>
         </header>
 
-        <nav class="flex border-b border-gray-200 mb-8 flex-wrap">
-            <button id="tabRequisicao" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 transition">Requisição de Empenho</button>
-            <button id="tabEmitidas" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 transition">Requisições Emitidas</button>
-            <button id="tabGerenciar" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 transition">Gerenciar Dados</button>
-            <button id="tabConfiguracoes" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 transition">Configurações</button>
-            <button id="tabBackup" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 transition">Backup / Restaurar</button>
+        <nav class="flex border-b border-gray-200 dark:border-gray-700 mb-8 flex-wrap">
+            <button id="tabRequisicao" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white transition">Requisição de Empenho</button>
+            <button id="tabEmitidas" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white transition">Requisições Emitidas</button>
+            <button id="tabGerenciar" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white transition">Gerenciar Dados</button>
+            <button id="tabConfiguracoes" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white transition">Configurações</button>
+            <button id="tabBackup" class="tab-btn py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white transition">Backup / Restaurar</button>
         </nav>
 
         <div id="viewRequisicao">
-            <main class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+            <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg">
                 <div id="step1" class="fade-in">
-                    <h2 class="text-xl font-semibold mb-1">Passo 1: Identificar o Pregão</h2>
-                    <p class="text-gray-600 mb-6">Digite o número do pregão no formato NNNNN/AAAA.</p>
+                    <h2 class="text-xl font-semibold mb-1 dark:text-gray-100">Passo 1: Identificar o Pregão</h2>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">Digite o número do pregão no formato NNNNN/AAAA.</p>
                     <div class="flex flex-col sm:flex-row items-end gap-4">
                         <div class="w-full">
-                           <label for="pregaoInput" class="block text-sm font-medium text-gray-700 mb-1">Selecione o Pregão</label>
-                            <select id="pregaoInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white">
-                            </select>
+                           <label for="pregaoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Selecione o Pregão</label>
+                            <select id="pregaoInput" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></select>
                         </div>
                         <button id="btnStep1" class="w-full sm:w-auto bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">Avançar</button>
                     </div>
@@ -74,12 +77,12 @@
                 
                 <div id="step2" class="hidden fade-in">
                     <div class="flex justify-between items-start mb-6">
-                        <h2 class="text-xl font-semibold mb-1">Passo 2: Selecionar o Fornecedor</h2>
-                        <button id="backToStep1" class="text-sm text-blue-600 hover:underline">Voltar</button>
+                        <h2 class="text-xl font-semibold mb-1 dark:text-gray-100">Passo 2: Selecionar o Fornecedor</h2>
+                        <button id="backToStep1" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Voltar</button>
                     </div>
-                    <p id="pregaoInfo" class="text-gray-600 mb-4"></p>
+                    <p id="pregaoInfo" class="text-gray-600 dark:text-gray-400 mb-4"></p>
                     <div class="mb-4">
-                        <input type="search" id="fornecedorSearchInput" placeholder="Buscar por nome ou CNPJ..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        <input type="search" id="fornecedorSearchInput" placeholder="Buscar por nome ou CNPJ..." class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                     </div>
                     <div id="fornecedoresList" class="space-y-3"></div>
                     <div id="errorStep2" class="text-red-600 mt-4 text-sm font-medium hidden"></div>
@@ -89,134 +92,135 @@
                 </div>
                 
                 <div id="step3" class="hidden fade-in">
-                    <div class="flex justify-between items-start mb-6"><h2 class="text-xl font-semibold mb-1">Passo 3: Detalhes da Requisição e Itens</h2><button id="backToStep2" class="text-sm text-blue-600 hover:underline">Voltar</button></div>
-                    <p id="fornecedorInfo" class="text-gray-600 mb-4"></p>
-                    
+                    <div class="flex justify-between items-start mb-6"><h2 class="text-xl font-semibold mb-1 dark:text-gray-100">Passo 3: Detalhes da Requisição e Itens</h2><button id="backToStep2" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Voltar</button></div>
+                    <p id="fornecedorInfo" class="text-gray-600 dark:text-gray-400 mb-4"></p>
                     <div class="space-y-6">
-                        <div class="bg-gray-50 p-4 rounded-lg border">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações da Capa</h3>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Informações da Capa</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label for="numeroRequisicaoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número da Requisição (DFD)</label>
+                                    <input type="text" id="numeroRequisicaoInput" placeholder="Ex: 001/2025" required class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
+                                </div>
                                 <div>
-                                    <label for="nupInput" class="block text-sm font-medium text-gray-700">NUP</label>
-                                    <input type="text" id="nupInput" placeholder="00000.000000/0000-00" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="nupInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">NUP</label>
+                                    <input type="text" id="nupInput" placeholder="00000.000000/0000-00" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="setorInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Setor Requisitante (Interessado)</label>
+                                    <input type="text" id="setorInput" placeholder="Ex: ALMOX / 4º BIS" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="responsavelInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Responsável pela Demanda</label>
+                                    <input type="text" id="responsavelInput" placeholder="Posto/Grad e Nome Completo" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="identidadeInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Identidade</label>
+                                    <input type="text" id="identidadeInput" placeholder="Nº da Identidade" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="destinoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Destino do Material</label>
+                                    <input type="text" id="destinoInput" placeholder="Ex: CEF" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="contatoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Telefone / RITEX</label>
+                                    <input type="text" id="contatoInput" placeholder="(00) 00000-0000" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label for="numeroRequisicaoInput" class="block text-sm font-medium text-gray-700">Número da Requisição (DFD)</label>
-                                    <input type="text" id="numeroRequisicaoInput" placeholder="Ex: 001/2025" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                </div>
-                                <div>
-                                    <label for="setorInput" class="block text-sm font-medium text-gray-700">Setor Requisitante (Interessado)</label>
-                                    <input type="text" id="setorInput" placeholder="Ex: ALMOX / 4º BIS" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                </div>
-                                <div>
-                                    <label for="responsavelInput" class="block text-sm font-medium text-gray-700">Responsável pela Demanda</label>
-                                    <input type="text" id="responsavelInput" placeholder="Posto/Grad e Nome Completo" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                </div>
-                                <div>
-                                    <label for="identidadeInput" class="block text-sm font-medium text-gray-700">Identidade</label>
-                                    <input type="text" id="identidadeInput" placeholder="Nº da Identidade" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                </div>
-                                <div>
-                                    <label for="destinoInput" class="block text-sm font-medium text-gray-700">Destino do Material</label>
-                                    <input type="text" id="destinoInput" placeholder="Ex: CEF" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                </div>
-                                <div>
-                                    <label for="contatoInput" class="block text-sm font-medium text-gray-700">Telefone / RITEX</label>
-                                    <input type="text" id="contatoInput" placeholder="(00) 00000-0000" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="emailInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">E-mail</label>
+                                    <input type="email" id="emailInput" placeholder="seuemail@dominio.com" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label for="emailInput" class="block text-sm font-medium text-gray-700">E-mail</label>
-                                    <input type="email" id="emailInput" placeholder="seuemail@dominio.com" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label for="anexosInput" class="block text-sm font-medium text-gray-700">Anexos</label>
-                                    <input type="text" id="anexosInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="anexosInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Anexos</label>
+                                    <input type="text" id="anexosInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg border">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Justificativa e Dados Orçamentários</h3>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Justificativa e Dados Orçamentários</h3>
                             <div class="space-y-4">
                                 <div>
-                                    <label for="justificativaInput" class="block text-sm font-medium text-gray-700">1. Justificativa da Necessidade</label>
-                                    <textarea id="justificativaInput" rows="6" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                                    <label for="justificativaInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">1. Justificativa da Necessidade</label>
+                                    <textarea id="justificativaInput" rows="6" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md"></textarea>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
-                                        <label for="notaCreditoInput" class="block text-sm font-medium text-gray-700">Nota de Crédito</label>
-                                        <input type="text" id="notaCreditoInput" placeholder="Ex: 2025NC002856" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                        <label for="notaCreditoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nota de Crédito</label>
+                                        <input type="text" id="notaCreditoInput" placeholder="Ex: 2025NC002856" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                     </div>
                                     <div>
-                                        <label for="planoInternoInput" class="block text-sm font-medium text-gray-700">Plano Interno (PI)</label>
-                                        <input type="text" id="planoInternoInput" placeholder="Ex: IXAPFUNCMA0" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                        <label for="planoInternoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Plano Interno (PI)</label>
+                                        <input type="text" id="planoInternoInput" placeholder="Ex: IXAPFUNCMA0" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                     </div>
                                     <div>
-                                        <label for="ptresInput" class="block text-sm font-medium text-gray-700">PTRES</label>
-                                        <input type="text" id="ptresInput" placeholder="Ex: 171502" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                        <label for="ptresInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">PTRES</label>
+                                        <input type="text" id="ptresInput" placeholder="Ex: 171502" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Tipo de Empenho</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Empenho</label>
                                     <div class="mt-2 flex items-center space-x-6">
-                                        <label class="inline-flex items-center"><input type="radio" name="tipoEmpenho" value="Ordinário" checked class="form-radio h-4 w-4 text-blue-600"><span class="ml-2">Ordinário</span></label>
-                                        <label class="inline-flex items-center"><input type="radio" name="tipoEmpenho" value="Global" class="form-radio h-4 w-4 text-blue-600"><span class="ml-2">Global</span></label>
-                                        <label class="inline-flex items-center"><input type="radio" name="tipoEmpenho" value="Estimativo" class="form-radio h-4 w-4 text-blue-600"><span class="ml-2">Estimativo</span></label>
+                                        <label class="inline-flex items-center"><input type="radio" name="tipoEmpenho" value="Ordinário" checked class="form-radio h-4 w-4 text-blue-600 dark:focus:ring-blue-600"><span class="ml-2 dark:text-gray-300">Ordinário</span></label>
+                                        <label class="inline-flex items-center"><input type="radio" name="tipoEmpenho" value="Global" class="form-radio h-4 w-4 text-blue-600 dark:focus:ring-blue-600"><span class="ml-2 dark:text-gray-300">Global</span></label>
+                                        <label class="inline-flex items-center"><input type="radio" name="tipoEmpenho" value="Estimativo" class="form-radio h-4 w-4 text-blue-600 dark:focus:ring-blue-600"><span class="ml-2 dark:text-gray-300">Estimativo</span></label>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg border">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações para Assinatura</h3>
+                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Informações para Assinatura</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label for="fiscalAdmInput" class="block text-sm font-medium text-gray-700">Nome do Fiscal Administrativo</label>
-                                    <input type="text" id="fiscalAdmInput" placeholder="Nome Completo" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="fiscalAdmInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome do Fiscal Administrativo</label>
+                                    <input type="text" id="fiscalAdmInput" placeholder="Nome Completo" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                                 <div>
-                                    <label for="fiscalAdmFuncInput" class="block text-sm font-medium text-gray-700">Posto/Função do Fiscal</label>
-                                    <input type="text" id="fiscalAdmFuncInput" placeholder="Ex: Cap, Fiscal Administrativo do 4º BIS" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="fiscalAdmFuncInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Posto/Função do Fiscal</label>
+                                    <input type="text" id="fiscalAdmFuncInput" placeholder="Ex: Cap, Fiscal Administrativo do 4º BIS" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                                 <div>
-                                    <label for="conformadorInput" class="block text-sm font-medium text-gray-700">Nome do Conformador</label>
-                                    <input type="text" id="conformadorInput" placeholder="Nome Completo" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="conformadorInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome do Conformador</label>
+                                    <input type="text" id="conformadorInput" placeholder="Nome Completo" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                                 <div>
-                                    <label for="conformadorFuncInput" class="block text-sm font-medium text-gray-700">Posto/Função do Conformador</label>
-                                    <input type="text" id="conformadorFuncInput" placeholder="Ex: 2º Ten, Conformador do 4º BIS" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="conformadorFuncInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Posto/Função do Conformador</label>
+                                    <input type="text" id="conformadorFuncInput" placeholder="Ex: 2º Ten, Conformador do 4º BIS" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                                 <div>
-                                    <label for="ordenadorInput" class="block text-sm font-medium text-gray-700">Nome do Ordenador de Despesas</label>
-                                    <input type="text" id="ordenadorInput" placeholder="Nome Completo" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="ordenadorInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome do Ordenador de Despesas</label>
+                                    <input type="text" id="ordenadorInput" placeholder="Nome Completo" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                                 <div>
-                                    <label for="ordenadorFuncInput" class="block text-sm font-medium text-gray-700">Posto/Função do Ordenador</label>
-                                    <input type="text" id="ordenadorFuncInput" placeholder="Ex: Cel, Ordenador de Despesas" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="ordenadorFuncInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Posto/Função do Ordenador</label>
+                                    <input type="text" id="ordenadorFuncInput" placeholder="Ex: Cel, Ordenador de Despesas" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-4">Itens a Solicitar</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-4">Itens a Solicitar</h3>
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th class="w-12"></th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Unit.</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qtd. Disp.</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qtd. a Solicitar</th></tr></thead><tbody id="itemsTableBody" class="bg-white divide-y divide-gray-200"></tbody></table>
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"><thead class="bg-gray-50 dark:bg-gray-700"><tr><th class="w-12"></th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Item</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valor Unit.</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Qtd. Disp.</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Qtd. a Solicitar</th></tr></thead><tbody id="itemsTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody></table>
                     </div>
                     <div id="errorStep3" class="text-red-600 mt-4 text-sm font-medium hidden"></div>
-                    <div class="mt-6 flex justify-between items-center"><div class="font-semibold text-lg"><span>Valor Total: </span><span id="totalValue" class="text-blue-700">R$ 0,00</span></div><button id="btnStep3" class="bg-green-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-green-700 transition shadow-sm disabled:bg-gray-400" disabled>Pré-visualizar Requisição</button></div>
+                    <div class="mt-6 flex justify-between items-center"><div class="font-semibold text-lg dark:text-gray-200"><span>Valor Total: </span><span id="totalValue" class="text-blue-700 dark:text-blue-400">R$ 0,00</span></div><button id="btnStep3" class="bg-green-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-green-700 transition shadow-sm disabled:bg-gray-400" disabled>Pré-visualizar Requisição</button></div>
                 </div>
+                
                 <div id="step4" class="hidden fade-in">
-                    <div class="flex justify-between items-start mb-4"><h2 class="text-xl font-semibold mb-1">Passo 4: Finalizar Requisição</h2><button id="backToStep3" class="text-sm text-blue-600 hover:underline">Voltar e Editar</button></div>
-                    <div class="bg-gray-50 p-4 rounded-lg border">
-                        <h3 class="font-bold text-lg mb-2">Resumo da Requisição</h3>
+                    <div class="flex justify-between items-start mb-4"><h2 class="text-xl font-semibold mb-1 dark:text-gray-100">Passo 4: Finalizar Requisição</h2><button id="backToStep3" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Voltar e Editar</button></div>
+                    <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <h3 class="font-bold text-lg mb-2 dark:text-gray-100">Resumo da Requisição</h3>
                         <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                            <span class="font-semibold text-gray-600">Nº da Requisição:</span><span id="previewNumRequisicao"></span>
-                            <span class="font-semibold text-gray-600">Setor Requisitante:</span><span id="previewSetor"></span>
-                            <span class="font-semibold text-gray-600">Pregão:</span><span id="previewPregao"></span>
-                            <span class="font-semibold text-gray-600">Fornecedor:</span><span id="previewFornecedor"></span>
-                            <span class="font-semibold text-gray-600">Valor Total:</span><span id="previewValor" class="font-bold"></span>
-                            <span class="font-semibold text-gray-600 col-span-2 mt-2">Justificativa da Necessidade:</span>
-                            <div id="previewJustificativa" class="col-span-2 text-sm texto-formatado border-t pt-2"></div>
+                            <span class="font-semibold text-gray-600 dark:text-gray-400">Nº da Requisição:</span><span id="previewNumRequisicao"></span>
+                            <span class="font-semibold text-gray-600 dark:text-gray-400">Setor Requisitante:</span><span id="previewSetor"></span>
+                            <span class="font-semibold text-gray-600 dark:text-gray-400">Pregão:</span><span id="previewPregao"></span>
+                            <span class="font-semibold text-gray-600 dark:text-gray-400">Fornecedor:</span><span id="previewFornecedor"></span>
+                            <span class="font-semibold text-gray-600 dark:text-gray-400">Valor Total:</span><span id="previewValor" class="font-bold"></span>
+                            
+                            <span class="font-semibold text-gray-600 dark:text-gray-400 col-span-2 mt-2">Justificativa da Necessidade:</span>
+                            <div id="previewJustificativa" class="col-span-2 text-sm texto-formatado border-t border-gray-200 dark:border-gray-600 pt-2"></div>
                         </div>
                     </div>
                     <div id="finalActions">
@@ -230,91 +234,78 @@
                         <button id="btnNewRequisition" class="w-full sm:w-auto bg-gray-700 text-white font-semibold px-6 py-2 rounded-lg hover:bg-gray-800 transition shadow-sm">Iniciar Nova Requisição</button>
                     </div>
                 </div>
+                
                 <div id="step5" class="hidden fade-in text-center">
-                     <div class="flex justify-center mb-4"><div class="loader"></div></div>
-                    <h2 class="text-2xl font-bold text-gray-800">Gerando seu PDF...</h2>
-                    <p class="text-gray-600 mt-2">Aguarde um momento.</p>
+                    <div class="flex justify-center mb-4"><div class="loader"></div></div>
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Gerando seu PDF...</h2>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">Aguarde um momento.</p>
                 </div>
             </main>
         </div>
 
         <div id="viewGerenciar" class="hidden">
-            <main class="bg-white p-6 sm:p-8 rounded-xl shadow-lg space-y-8">
-                <div class="border-b pb-8">
-                    <h2 class="text-xl font-semibold mb-4">Gerenciar Pregões</h2>
-                    <div class="border-b pb-6">
-                        <h3 class="text-lg font-semibold mb-4">Adicionar Novo Pregão</h3>
+            <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg space-y-8">
+                <div class="border-b dark:border-gray-700 pb-8">
+                    <h2 class="text-xl font-semibold mb-4 dark:text-gray-100">Gerenciar Pregões</h2>
+                    <div class="border-b dark:border-gray-700 pb-6">
+                        <h3 class="text-lg font-semibold mb-4 dark:text-gray-200">Adicionar Novo Pregão</h3>
                         <form id="formAddPregao" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                            <div><label for="adminPregaoId" class="block text-sm font-medium text-gray-700">Número do Pregão</label><input type="text" id="adminPregaoId" placeholder="NNNNN/AAAA" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></div>
-                            <div><label for="adminPregaoObjeto" class="block text-sm font-medium text-gray-700">Objeto do Pregão</label><input type="text" id="adminPregaoObjeto" placeholder="Descrição do objeto" required class="mt-1 w-full px-3 py-2 border border-ray-300 rounded-md"></div>
+                            <div><label for="adminPregaoId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número do Pregão</label><input type="text" id="adminPregaoId" placeholder="NNNNN/AAAA" required class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md"></div>
+                            <div><label for="adminPregaoObjeto" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Objeto do Pregão</label><input type="text" id="adminPregaoObjeto" placeholder="Descrição do objeto" required class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md"></div>
                             <button type="submit" class="w-full md:w-auto justify-self-end bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700">Adicionar Pregão</button>
                         </form>
                         <div id="errorAdminPregao" class="text-red-600 mt-2 text-sm font-medium hidden"></div>
                     </div>
                     <div class="mt-6">
-                        <h3 class="text-lg font-semibold mb-4">Pregões Cadastrados</h3>
+                        <h3 class="text-lg font-semibold mb-4 dark:text-gray-200">Pregões Cadastrados</h3>
                         <div id="adminPregoesContainer" class="space-y-6"></div>
                     </div>
                 </div>
                 <div id="userManagementSection">
-                    <h2 class="text-xl font-semibold mb-4">Gerenciar Usuários</h2>
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <form id="formAddUser" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                             <div><label for="newUsername" class="block text-sm font-medium text-gray-700">Nome de Usuário</label><input type="text" id="newUsername" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></div>
-                             <div><label for="newPassword" class="block text-sm font-medium text-gray-700">Senha</label><input type="password" id="newPassword" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></div>
-                             <div><label for="newRole" class="block text-sm font-medium text-gray-700">Nível</label><select id="newRole" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"><option value="requisitante">Requisitante</option><option value="admin">Administrador</option></select></div>
-                             <button type="submit" class="md:col-span-3 w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">Adicionar Usuário</button>
-                        </form>
-                        <div id="addUserError" class="text-red-600 mt-2 text-sm font-medium hidden"></div>
                     </div>
-                    <div class="mt-6">
-                        <h3 class="text-lg font-medium text-gray-800 mb-2">Usuários Cadastrados</h3>
-                        <div id="usersList" class="overflow-x-auto"></div>
-                    </div>
-                </div>
             </main>
         </div>
 
         <div id="viewEmitidas" class="hidden">
-            <main class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
-                <h2 class="text-xl font-semibold mb-6">Histórico de Requisições Emitidas</h2>
+            <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg">
+                <h2 class="text-xl font-semibold mb-6 dark:text-gray-100">Histórico de Requisições Emitidas</h2>
                 <div id="listRequisicoesEmitidas" class="overflow-x-auto"></div>
             </main>
         </div>
 
         <div id="viewConfiguracoes" class="hidden">
-            <main class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
-                <h2 class="text-xl font-semibold mb-6">Configurações Gerais</h2>
-                <div class="bg-gray-50 p-4 rounded-lg border">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Assinaturas Padrão</h3>
+            <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg">
+                <h2 class="text-xl font-semibold mb-6 dark:text-gray-100">Configurações Gerais</h2>
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Assinaturas Padrão</h3>
                     <form id="formConfiguracoes" class="space-y-4">
                          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="defaultFiscalAdmInput" class="block text-sm font-medium text-gray-700">Nome do Fiscal Administrativo</label>
-                                <input type="text" id="defaultFiscalAdmInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <label for="defaultFiscalAdmInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome do Fiscal Administrativo</label>
+                                <input type="text" id="defaultFiscalAdmInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                             </div>
                             <div>
-                                <label for="defaultFiscalAdmFuncInput" class="block text-sm font-medium text-gray-700">Posto/Função do Fiscal</label>
-                                <input type="text" id="defaultFiscalAdmFuncInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <label for="defaultFiscalAdmFuncInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Posto/Função do Fiscal</label>
+                                <input type="text" id="defaultFiscalAdmFuncInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                             </div>
                             <div>
-                                <label for="defaultConformadorInput" class="block text-sm font-medium text-gray-700">Nome do Conformador</label>
-                                <input type="text" id="defaultConformadorInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <label for="defaultConformadorInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome do Conformador</label>
+                                <input type="text" id="defaultConformadorInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                             </div>
                             <div>
-                                <label for="defaultConformadorFuncInput" class="block text-sm font-medium text-gray-700">Posto/Função do Conformador</label>
-                                <input type="text" id="defaultConformadorFuncInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <label for="defaultConformadorFuncInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Posto/Função do Conformador</label>
+                                <input type="text" id="defaultConformadorFuncInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                             </div>
                             <div>
-                                <label for="defaultOrdenadorInput" class="block text-sm font-medium text-gray-700">Nome do Ordenador de Despesas</label>
-                                <input type="text" id="defaultOrdenadorInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <label for="defaultOrdenadorInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome do Ordenador de Despesas</label>
+                                <input type="text" id="defaultOrdenadorInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                             </div>
                             <div>
-                                <label for="defaultOrdenadorFuncInput" class="block text-sm font-medium text-gray-700">Posto/Função do Ordenador</label>
-                                <input type="text" id="defaultOrdenadorFuncInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <label for="defaultOrdenadorFuncInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Posto/Função do Ordenador</label>
+                                <input type="text" id="defaultOrdenadorFuncInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                             </div>
                         </div>
-                        <div class="flex justify-end">
+                        <div class="flex justify-end pt-4">
                              <button type="submit" class="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">Salvar Configurações</button>
                         </div>
                     </form>
@@ -324,114 +315,159 @@
         </div>
 
         <div id="viewBackup" class="hidden">
-            <main class="bg-white p-6 sm:p-8 rounded-xl shadow-lg space-y-8">
+            <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg space-y-8">
                 <div>
-                    <h2 class="text-xl font-semibold mb-2">Criar Ponto de Backup</h2>
-                    <p class="text-gray-600 mb-4">Clique para baixar um arquivo (`.json`) com todos os dados do sistema. Guarde-o em local seguro.</p>
+                    <h2 class="text-xl font-semibold mb-2 dark:text-gray-100">Criar Ponto de Backup</h2>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">Clique para baixar um arquivo (`.json`) com todos os dados do sistema. Guarde-o em local seguro.</p>
                     <button id="btnCreateBackup" class="bg-green-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-green-700 transition shadow-sm">Criar e Baixar Backup</button>
                 </div>
-                <div class="border-t pt-8">
-                    <h2 class="text-xl font-semibold mb-2">Restaurar a partir de um Backup</h2>
-                    <p class="text-gray-600 mb-4">Selecione um arquivo de backup (`.json`).</p>
+                <div class="border-t dark:border-gray-700 pt-8">
+                    <h2 class="text-xl font-semibold mb-2 dark:text-gray-100">Restaurar a partir de um Backup</h2>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">Selecione um arquivo de backup (`.json`).</p>
                     <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-r-lg" role="alert">
                         <p class="font-bold">Atenção!</p><p>Restaurar um backup irá **substituir permanentemente todos os dados atuais**.</p>
                     </div>
-                    <input type="file" id="backupFileInput" accept=".json" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                    <input type="file" id="backupFileInput" accept=".json" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-gray-700 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-gray-600"/>
                     <button id="btnRestoreBackup" class="mt-4 bg-red-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-red-700 transition shadow-sm disabled:bg-gray-400" disabled>Restaurar Dados</button>
                     <div id="restoreStatus" class="mt-4 text-sm font-medium hidden"></div>
                 </div>
             </main>
         </div>
     </div>
-
-    <footer class="text-center py-4 text-gray-500 text-sm">
+    
+    <footer class="text-center py-4 text-gray-500 dark:text-gray-400 text-sm">
         Desenvolvido por: 3°Sgt Int Eugênio
     </footer>
 
-    <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-        <main class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg m-4">
-            <h2 id="editModalTitle" class="text-2xl font-bold text-gray-700 mb-6">Editar Pregão</h2>
-            <form id="formEditPregao" class="space-y-6">
-                <input type="hidden" id="editPregaoId">
-                <div>
-                    <label for="editPregaoNumero" class="block text-sm font-medium text-gray-700">Número do Pregão</label>
-                    <input type="text" id="editPregaoNumero" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+    <div id="editModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-lg max-h-full">
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 id="editModalTitle" class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Editar Pregão
+                    </h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="editModal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Fechar modal</span>
+                    </button>
                 </div>
-                <div>
-                    <label for="editPregaoObjeto" class="block text-sm font-medium text-gray-700">Objeto do Pregão</label>
-                    <input type="text" id="editPregaoObjeto" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                <div class="p-4 md:p-5">
+                    <form id="formEditPregao" class="space-y-4">
+                        <input type="hidden" id="editPregaoId">
+                        <div>
+                            <label for="editPregaoNumero" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Número do Pregão</label>
+                            <input type="text" id="editPregaoNumero" required class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                        </div>
+                        <div>
+                            <label for="editPregaoObjeto" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Objeto do Pregão</label>
+                            <input type="text" id="editPregaoObjeto" required class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                        </div>
+                        <div class="flex items-center pt-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+                            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Salvar Alterações</button>
+                            <button data-modal-hide="editModal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancelar</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" id="btnCancelEdit" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition">Salvar Alterações</button>
-                </div>
-            </form>
-        </main>
+            </div>
+        </div>
     </div>
 
-    <div id="editRequisitionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-        <main class="w-full max-w-4xl bg-white p-6 sm:p-8 rounded-xl shadow-lg m-4">
-            <h2 class="text-2xl font-bold text-gray-700 mb-6">Editar Requisição</h2>
-            
-            <form id="formEditRequisition" class="space-y-6 max-h-[80vh] overflow-y-auto pr-4">
+    <div id="editRequisitionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+        <main class="w-full max-w-3xl bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg m-4">
+            <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-6">Editar Requisição</h2>
+            <form id="formEditRequisition" class="space-y-6 max-h-[70vh] overflow-y-auto pr-4">
                 <input type="hidden" id="editRequisitionId">
-                
-                <div class="bg-gray-50 p-4 rounded-lg border">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Informações Gerais</h3>
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Informações da Capa</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="editNumeroRequisicaoInput" class="block text-sm font-medium text-gray-700">Número da Requisição (DFD)</label>
-                            <input type="text" id="editNumeroRequisicaoInput" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+                        <label for="editNumeroRequisicaoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número da Requisição (DFD)</label>
+                        <input type="text" id="editNumeroRequisicaoInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                         </div>
                         <div>
-                            <label for="editSetorInput" class="block text-sm font-medium text-gray-700">Setor Requisitante</label>
-                            <input type="text" id="editSetorInput" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <label for="editNupInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">NUP</label>
+                            <input type="text" id="editNupInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                         </div>
-                         <div>
-                            <label for="editNupInput" class="block text-sm font-medium text-gray-700">NUP</label>
-                            <input type="text" id="editNupInput" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                        </div>
-                         <div class="md:col-span-2">
-                            <label for="editJustificativaInput" class="block text-sm font-medium text-gray-700">Justificativa da Necessidade</label>
-                            <textarea id="editJustificativaInput" rows="6" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                        <div>
+                            <label for="editSetorInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Setor Requisitante</label>
+                            <input type="text" id="editSetorInput" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md">
                         </div>
                     </div>
                 </div>
-
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Justificativa</h3>
+                    <div>
+                        <label for="editJustificativaInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Justificativa da Necessidade</label>
+                        <textarea id="editJustificativaInput" rows="6" class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-md"></textarea>
+                    </div>
+                </div>
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-4">Itens a Solicitar</h3>
-                    <p class="text-sm text-gray-500 mb-4">Ajuste as quantidades solicitadas. O saldo exibido reflete o estoque atual **mais** a quantidade que esta requisição já havia reservado.</p>
-                    <div class="overflow-x-auto border rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-4">Itens da Requisição</h3>
+                     <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo Disponível</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qtd. a Solicitar (Nova)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Item</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Saldo Disponível</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Qtd. a Solicitar</th>
                                 </tr>
                             </thead>
-                            <tbody id="editItemsTableBody" class="bg-white divide-y divide-gray-200">
-                                </tbody>
+                            <tbody id="editItemsTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            </tbody>
                         </table>
                     </div>
                 </div>
-                
-                <div class="flex justify-between items-center pt-4">
-                    <div class="font-semibold text-lg">
-                        <span>Novo Valor Total: </span>
-                        <span id="editTotalValue" class="text-blue-700">R$ 0,00</span>
-                    </div>
-                    <div class="flex gap-4">
-                        <button type="button" id="btnCancelEditRequisition" class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
-                        <button type="submit" class="bg-green-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-700 transition">Salvar Alterações</button>
-                    </div>
+                <div class="flex justify-between items-center mt-6 pt-4 border-t dark:border-gray-700">
+    <div class="font-semibold text-lg dark:text-gray-200">
+        <span>Valor Total: </span>
+        <span id="editTotalValue" class="text-blue-700 dark:text-blue-400">R$ 0,00</span>
+    </div>
+</div>
+                <div class="flex justify-end gap-4 pt-4 border-t dark:border-gray-700">
+                    <button type="button" id="btnCancelEditRequisition" class="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">Cancelar</button>
+                    <button type="submit" class="bg-green-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-700 transition">Salvar Alterações</button>
                 </div>
             </form>
-        </main>
-    </div>
+            </main>
+                </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script type="module" src="./js/main.js"></script>
+    <script>
+    // Theme toggle
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    // Carregar preferencia salva ou padrão do sistema
+    if (
+        localStorage.getItem('color-theme') === 'dark' ||
+        (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+        document.documentElement.classList.add('dark');
+        lightIcon.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.remove('dark');
+        darkIcon.classList.remove('hidden');
+    }
+
+    // Alternar ao clicar
+    themeToggleBtn.addEventListener('click', function () {
+        darkIcon.classList.toggle('hidden');
+        lightIcon.classList.toggle('hidden');
+
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
+</script>
 
 </body>
 </html>
